@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Any3R: Feedforward 3D Reconstruction from Any Camera Type</title>
+  <meta name="description" content="Any3R: Feedforward 3D Reconstruction from Any Camera Type. Project page; paper on arXiv, code on GitHub.">
+  <meta property="og:title" content="Any3R: Feedforward 3D Reconstruction from Any Camera Type">
+  <meta property="og:description" content="A feed-forward model that reconstructs a scene and its camera poses from views of any mix of central cameras.">
+  <meta property="og:url" content="https://jingong-chen.github.io/Any3R/">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='none' stroke='%23363636' stroke-width='3'/%3E%3Ccircle cx='16' cy='16' r='4' fill='%23363636'/%3E%3C/svg%3E">
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro&display=swap" rel="stylesheet">
+  <style>
+    :root { --ink: #363636; --muted: #4a4a4a; --soft: #7a7a7a; --link: #3273dc; --btn: #363636; --btn-hover: #4a4a4a; }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; background: #ffffff; color: var(--ink); }
+    body { font-family: "Noto Sans", "Helvetica Neue", Arial, sans-serif; font-size: 16px; line-height: 1.5; }
+    a { color: var(--link); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .hero { padding: 3rem 1.25rem 1.5rem; text-align: center; }
+    .container { max-width: 960px; margin: 0 auto; }
+    h1.title { font-family: "Google Sans", "Noto Sans", sans-serif; font-weight: 400; font-size: 2.75rem; line-height: 1.2;
+               margin: 0 0 1.25rem; color: var(--ink); text-wrap: balance; }
+    .authors { font-family: "Google Sans", "Noto Sans", sans-serif; font-size: 1.25rem; line-height: 1.7; color: var(--ink); }
+    .author { display: inline-block; margin: 0 0.45rem; white-space: nowrap; }
+    sup { font-size: 0.7em; line-height: 0; }
+    .affiliations { font-family: "Google Sans", "Noto Sans", sans-serif; font-size: 1.1rem; color: var(--muted); margin-top: 0.75rem; line-height: 1.7; }
+    .affiliation { display: inline-block; margin: 0 0.6rem; white-space: nowrap; }
+    .notes { font-size: 0.95rem; color: var(--soft); margin-top: 0.4rem; }
+    .notes span { margin: 0 0.6rem; }
+    .links { display: flex; flex-wrap: wrap; gap: 0.6rem; justify-content: center; margin-top: 1.5rem; }
+    .button { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.55rem 1.25rem; border-radius: 290486px;
+              background: var(--btn); color: #ffffff; font-family: "Google Sans", "Noto Sans", sans-serif; font-size: 1.05rem; }
+    .button:hover { background: var(--btn-hover); text-decoration: none; }
+    .button:focus-visible { outline: 3px solid var(--link); outline-offset: 2px; }
+    .button svg { width: 1.15em; height: 1.15em; fill: currentColor; }
+    .soon { padding: 2.5rem 1.25rem 4rem; text-align: center; }
+    .soon h2 { font-family: "Google Sans", "Noto Sans", sans-serif; font-weight: 400; font-size: 2rem; margin: 0 0 0.75rem; color: var(--ink); }
+    .soon p { max-width: 42rem; margin: 0 auto; color: var(--muted); font-size: 1.05rem; }
+    footer { border-top: 1px solid #ededed; padding: 1.5rem 1.25rem; text-align: center; font-size: 0.85rem; color: var(--soft); }
+    @media (max-width: 640px) {
+      h1.title { font-size: 2rem; }
+      .authors { font-size: 1.1rem; }
+      .affiliations { font-size: 1rem; }
+    }
+  </style>
+</head>
+<body>
+  <section class="hero">
+    <div class="container">
+      <h1 class="title">Any3R: Feedforward 3D Reconstruction<br>from Any Camera Type</h1>
+
+      <div class="authors">
+        <span class="author">Jingong Chen<sup>1,2</sup></span>
+        <span class="author">Qingwen Zhang<sup>3&dagger;</sup></span>
+        <span class="author">Youming Deng<sup>4&dagger;</sup></span>
+        <span class="author">Chulwoo Pack<sup>1</sup></span>
+        <span class="author">Olaf Wysocki<sup>5</sup></span>
+        <span class="author">Boris Jutzi<sup>6</sup></span>
+        <span class="author">Kwanghee Won<sup>1*</sup></span>
+        <span class="author">Kyle Gao<sup>2</sup></span>
+      </div>
+
+      <div class="affiliations">
+        <span class="affiliation"><sup>1</sup>South Dakota State University</span>
+        <span class="affiliation"><sup>2</sup>Aalto University</span>
+        <span class="affiliation"><sup>3</sup>KTH Royal Institute of Technology</span>
+        <span class="affiliation"><sup>4</sup>Cornell University</span>
+        <span class="affiliation"><sup>5</sup>University of Cambridge</span>
+        <span class="affiliation"><sup>6</sup>Karlsruhe Institute of Technology</span>
+      </div>
+      <div class="notes"><span><sup>&dagger;</sup>Equal contribution</span><span><sup>*</sup>Corresponding author</span></div>
+
+      <nav class="links" aria-label="Paper and code">
+        <a class="button" id="arxiv-link" href="https://arxiv.org/search/?query=Any3R%3A+Feedforward+3D+Reconstruction+from+Any+Camera+Type&amp;searchtype=title">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h8l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Zm7 1.5V8h4.5L13 3.5ZM8 12v1.6h8V12H8Zm0 3.4V17h8v-1.6H8Zm0-6.8v1.6h4V8.6H8Z"/></svg>
+          <span>arXiv</span>
+        </a>
+        <a class="button" href="https://github.com/Jingong-Chen/Any3R">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38v-1.33c-2.23.48-2.7-1.07-2.7-1.07-.36-.92-.89-1.17-.89-1.17-.73-.5.06-.49.06-.49.8.06 1.23.83 1.23.83.72 1.22 1.88.87 2.34.66.07-.52.28-.87.5-1.07-1.78-.2-3.65-.89-3.65-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.6 7.6 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48v2.2c0 .21.15.46.55.38A8 8 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+          <span>Code</span>
+        </a>
+      </nav>
+    </div>
+  </section>
+
+  <section class="soon">
+    <div class="container">
+      <h2>Coming soon</h2>
+      <p>Results, videos and code will be released here. The paper is on arXiv, and the code will be published in the GitHub repository.</p>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">Any3R &middot; <a href="https://github.com/Jingong-Chen/Any3R">github.com/Jingong-Chen/Any3R</a></div>
+  </footer>
+</body>
+</html>

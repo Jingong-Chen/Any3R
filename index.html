@@ -154,8 +154,12 @@
 </section>
 
 <section id="compare" class="wide">
-  <h2>Same views, seven methods</h2>
+  <h2>Same views, every method</h2>
   <p class="lead">Each scene is imaged by three views through one camera model. Every method fuses its own per-view points with its <b>own predicted poses</b>, and one similarity transform places each cloud in the ground-truth frame. The two viewers share one camera; pick a method above each.</p>
+  <div class="fam-tabs tabs">
+    <button class="tab fam-tab active" data-f="gfm">Geometry foundation models</button>
+    <button class="tab fam-tab" data-f="aware">Methods built for other cameras</button>
+  </div>
   <div class="row-chips"></div>
   <div class="cmp-head">
     <div class="cmp-caption"></div>
@@ -170,7 +174,7 @@
     <button class="tool-text btn-cmp-reset"><i class="fas fa-house"></i> Reset view</button>
     <label class="tool-text"><i class="fas fa-circle-dot"></i> Point size <input class="cmp-size" type="range" min="0.3" max="3" step="0.05" value="1"></label>
   </div>
-  <p class="small-note">Data of the paper's eight-camera comparison figure (120k points per cloud). Indoor clouds hide their own highest 30% of points, the same rule for every method, so the room can be seen from above.</p>
+  <p class="small-note cmp-note"></p>
   <h2 class="mt">All eight cameras at a glance</h2>
   <p class="lead">One scene per row, three native views each; every method fuses them with its own predicted poses. MapAny. is MapAnything and Any3R* is Any3R without its ray map.</p>
   <img class="figure" src="static/img/compare_cameras.jpg" alt="Eight central camera models, seven methods, one scene per row" loading="lazy">

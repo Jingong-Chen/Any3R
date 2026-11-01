@@ -256,3 +256,6 @@ footer { margin-top: 72px; padding: 28px 20px 40px; text-align: center; color: v
 .motiv-pair img.depth { width: 100%; aspect-ratio: 1 / 1; object-fit: contain; display: block; border: 1px solid var(--line); border-radius: var(--radius); background: #fff; }
 .motiv-col .viewer-box.recon { box-shadow: none; }
 @media (max-width: 900px) { .motiv-grid { grid-template-columns: minmax(0, 1fr); } }
+
+.fam-tabs { display: flex; width: fit-content; margin: 0 auto 14px; }
+.mbtn.na, .mbtn:disabled { opacity: 0.38; cursor: not-allowed; text-decoration: line-through; }

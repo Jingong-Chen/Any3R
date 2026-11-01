@@ -110,68 +110,100 @@ async function initGallery() {
 }
 
 // ------------------------------------------------------------------------------ comparison
+const FAMILIES = {
+  gfm: { file: "cmp.json", prefix: "cmp", right: ["pi3", "mapa", "vggtomega"],
+         note: "Geometry foundation models: data of the paper's eight-camera comparison figure (120k points per cloud)." },
+  aware: { file: "cmpa.json", prefix: "cmpa", right: ["wid3r", "maparay", "panovggt", "omnivggt"],
+           note: "Methods built for other cameras: data of the paper's camera-aware comparison figure. Wid3R receives the true ray field; MapA-ray is MapAnything with the true ray field fed to its ray encoder; greyed-out buttons mark cameras a method cannot take." },
+};
+
 async function initCompare() {
   const root = $("#compare");
   if (!root) return;
-  const data = await (await fetch("static/pcd/cmp.json")).json();
-  const rows = data.rows;
-  const panes = [...root.querySelectorAll(".cmp-pane")].map((pane, k) => ({
+  const fams = {};
+  for (const [k, f] of Object.entries(FAMILIES)) fams[k] = (await (await fetch(`static/pcd/${f.file}`)).json()).rows;
+  const panes = [...root.querySelectorAll(".cmp-pane")].map((pane) => ({
     pane, viewer: new PointViewer($(".viewer-canvas", pane), { baseSize: 0.015 }),
-    method: k === 0 ? "ours" : "pi3", status: $(".viewer-status", pane),
+    method: "ours", status: $(".viewer-status", pane),
   }));
   panes[0].viewer.link(panes[1].viewer);
-  let row = 0, cut = true;
+  let fam = "gfm", row = 0, cut = true;
   const cache = new Map();
+  const rowsOf = () => fams[fam];
 
   async function load(p) {
-    const r = rows[row], m = r.methods.find((x) => x.key === p.method);
-    const key = `${row}|${p.method}`;
+    const r = rowsOf()[row], m = r.methods.find((x) => x.key === p.method && !x.na);
+    p.pane.querySelectorAll(".mbtn").forEach((b) => b.classList.toggle("active", b.dataset.m === p.method));
+    if (!m) return;
+    const key = `${fam}|${row}|${p.method}`;
     p.status.hidden = false; p.status.textContent = "Loading…";
-    if (!cache.has(key)) cache.set(key, loadPoints(`static/pcd/cmp_r${r.row}_${m.key}.bin`, m.lo, m.hi));
+    if (!cache.has(key)) cache.set(key, loadPoints(`static/pcd/${FAMILIES[fam].prefix}_r${r.row}_${m.key}.bin`, m.lo, m.hi));
     const pts = await cache.get(key);
     p.viewer.setPoints(pts);
     p.viewer.setClipQuantile(r.indoor && cut ? 0.7 : 1);
     p.status.hidden = true;
-    p.pane.querySelectorAll(".mbtn").forEach((b) => b.classList.toggle("active", b.dataset.m === p.method));
   }
 
   function buildButtons(p) {
     const box = $(".method-buttons", p.pane);
     box.innerHTML = "";
-    for (const m of rows[0].methods) {
-      const b = el("button", "mbtn" + (m.key === "ours" ? " ours" : m.key === "gt" ? " gt" : ""), m.label);
+    for (const m of rowsOf()[row].methods) {
+      const b = el("button", "mbtn" + (m.key === "ours" ? " ours" : m.key === "gt" ? " gt" : "") + (m.na ? " na" : ""), m.label);
       b.dataset.m = m.key;
-      b.addEventListener("click", () => { p.method = m.key; load(p); });
+      if (m.na) { b.disabled = true; b.title = m.na; }
+      else b.addEventListener("click", () => { p.method = m.key; load(p); });
       box.appendChild(b);
     }
   }
-  panes.forEach(buildButtons);
 
   const chips = $(".row-chips", root), inputs = $(".cmp-inputs", root), cutBtn = $(".btn-cut", root);
-  rows.forEach((r, i) => {
-    const c = el("button", "chip", `${r.label} <b>${fmtFov(r.fov)}</b><span>${r.ds}</span>`);
-    c.addEventListener("click", () => select(i));
-    chips.appendChild(c);
-  });
+  function buildChips() {
+    chips.innerHTML = "";
+    rowsOf().forEach((r, i) => {
+      const c = el("button", "chip", `${r.label} <b>${fmtFov(r.fov)}</b><span>${r.ds}</span>`);
+      c.addEventListener("click", () => select(i));
+      chips.appendChild(c);
+    });
+  }
   cutBtn.addEventListener("click", () => {
     cut = !cut; cutBtn.classList.toggle("on", cut);
-    panes.forEach((p) => p.viewer.setClipQuantile(rows[row].indoor && cut ? 0.7 : 1));
+    panes.forEach((p) => p.viewer.setClipQuantile(rowsOf()[row].indoor && cut ? 0.7 : 1));
   });
 
   async function select(i) {
     row = i;
     chips.querySelectorAll(".chip").forEach((c, k) => c.classList.toggle("active", k === i));
-    const r = rows[i];
+    const r = rowsOf()[i];
+    const avail = new Set(r.methods.filter((m) => !m.na).map((m) => m.key));
+    if (!avail.has(panes[0].method)) panes[0].method = "ours";
+    if (!avail.has(panes[1].method) || panes[1].method === "ours")
+      panes[1].method = FAMILIES[fam].right.find((k) => avail.has(k)) || "gt";
+    panes.forEach(buildButtons);
     cutBtn.hidden = !r.indoor;
-    inputs.innerHTML = [0, 1, 2].map((k) => `<img src="static/thumbs/cmp_r${r.row}_${k}.webp" alt="input view ${k + 1}">`).join("");
+    inputs.innerHTML = [0, 1, 2].map((k) => `<img src="static/thumbs/${FAMILIES[fam].prefix}_r${r.row}_${k}.webp" alt="input view ${k + 1}">`).join("");
     $(".cmp-caption", root).innerHTML = `${r.ds} · three views through a <b>${r.label} ${fmtFov(r.fov)}</b> camera`;
+    $(".cmp-note", root).textContent = FAMILIES[fam].note + (r.indoor ? " Indoor clouds hide their own highest 30% of points, the same rule for every method." : "");
     const az = (225 * Math.PI) / 180, elv = ((r.indoor ? 50 : 35) * Math.PI) / 180, d = r.indoor ? 2.7 : 2.4;
     panes[0].viewer.setView([d * Math.cos(elv) * Math.sin(az), d * Math.sin(elv), d * Math.cos(elv) * Math.cos(az)], [0, 0, 0]);
     await Promise.all(panes.map(load));
   }
+
+  function setFamily(f) {
+    fam = f;
+    root.querySelectorAll(".fam-tab").forEach((t) => t.classList.toggle("active", t.dataset.f === f));
+    panes[1].method = "";
+    buildChips();
+    select(0);
+  }
+  root.querySelectorAll(".fam-tab").forEach((t) => t.addEventListener("click", () => setFamily(t.dataset.f)));
   root.querySelector(".btn-cmp-reset").addEventListener("click", () => panes[0].viewer.reset());
   root.querySelector(".cmp-size").addEventListener("input", (e) => panes.forEach((p) => p.viewer.setPointSize(Number(e.target.value))));
-  select(Math.min(rows.length - 1, Number(new URLSearchParams(location.search).get("row") || 0)));
+  const q = new URLSearchParams(location.search);
+  fam = q.get("fam") === "aware" ? "aware" : "gfm";
+  root.querySelectorAll(".fam-tab").forEach((t) => t.classList.toggle("active", t.dataset.f === fam));
+  panes[1].method = "";
+  buildChips();
+  select(Math.min(rowsOf().length - 1, Number(q.get("row") || 0)));
 }
 
 // ------------------------------------------------------------------------------ motivation

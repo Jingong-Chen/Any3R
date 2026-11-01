@@ -122,35 +122,137 @@ Any3R is fine-tuned from VGGT-Omega for 40 epochs on Matterport3D, Stanford2D3DS
 
 ## Results
 
-Reconstruction accuracy on the paper's benchmark: three datasets, each scene imaged through the same views by every camera model, and every method fuses its points with **its own predicted camera poses**. Lower is better; the best value of each column is in bold. Pose accuracy (AUC), five more camera models and zero-shot results on real fisheye lenses (ScanNet++, FIORD) are in the paper and on the [project page](https://jingong-chen.github.io/Any3R/).
+All numbers are from the paper. The benchmark images every scene of three datasets through the same views with each camera model, and every method fuses its points with **its own predicted camera poses**. Acc (m, lower is better) is the mean distance from a reconstructed point to the ground truth; AUC@15° / AUC@30° (%, higher is better) is the area under the pairwise pose-error curve. In each table, the best value of a column is in **bold** and the second best <ins>underlined</ins>. The five held-out camera models are in the paper's appendix and in [eval/README.md](eval/README.md).
 
-<b>Indoor (Matterport3D + Stanford2D3DS)</b> · Acc ↓ (m)
+**Comparison with methods built for other cameras.** Wid3R receives the true ray field; MapA-ray is MapAnything with the true ray field fed to its ray encoder; – marks cameras a method cannot take.
 
-| Method | Pinhole 90° | B–C 90° | Equi. 180° | ERP-crop 180° | MEI 180° | KB4 200° | DS 200° | ERP 360° |
+<b>Indoor (Matterport3D + Stanford2D3DS)</b>
+
+| Method | Pin. 90° | B–C 90° | Equi. 180° | ERP-C 180° | MEI 180° | KB4 200° | DS 200° | ERP 360° |
 |:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| *Acc ↓ (m)* | | | | | | | | |
 | OmniVGGT | 0.250 | 0.201 | 0.326 | 0.318 | 0.329 | 0.355 | 0.350 | 0.406 |
-| Wid3R | 0.144 | -- | 0.141 | -- | 0.146 | -- | -- | 0.101 |
-| PanoVGGT | 0.282 | 0.272 | 0.259 | 0.348 | 0.265 | 0.251 | 0.265 | 0.072 |
-| MapA-ray | 0.092 | 0.146 | 0.277 | 0.254 | 0.239 | 0.274 | 0.258 | 0.405 |
-| π³ | 0.084 | 0.119 | 0.171 | 0.287 | 0.164 | 0.189 | 0.183 | 0.414 |
-| MapAnything | 0.092 | 0.149 | 0.273 | 0.269 | 0.267 | 0.283 | 0.294 | 0.386 |
-| VGGT-Ω | 0.149 | 0.161 | 0.252 | 0.265 | 0.250 | 0.281 | 0.302 | 0.403 |
+| Wid3R | 0.144 | – | <ins>0.141</ins> | – | <ins>0.146</ins> | – | – | 0.101 |
+| PanoVGGT | 0.282 | 0.272 | 0.259 | 0.348 | 0.265 | <ins>0.251</ins> | 0.265 | <ins>0.072</ins> |
+| Argus | – | – | – | – | – | – | – | 0.094 |
+| MapA-ray | <ins>0.092</ins> | <ins>0.146</ins> | 0.277 | <ins>0.254</ins> | 0.239 | 0.274 | <ins>0.258</ins> | 0.405 |
 | **Any3R** | **0.076** | **0.091** | **0.058** | **0.052** | **0.059** | **0.056** | **0.060** | **0.054** |
+| *AUC@15° ↑ (%)* | | | | | | | | |
+| OmniVGGT | 6.3 | 1.8 | 1.9 | 12.1 | 0.6 | 0.9 | 2.9 | 0.7 |
+| Wid3R | 46.4 | – | <ins>59.4</ins> | – | <ins>59.5</ins> | – | – | 85.3 |
+| PanoVGGT | 2.2 | 2.5 | 21.7 | <ins>21.5</ins> | 23.6 | <ins>36.2</ins> | <ins>46.9</ins> | <ins>89.2</ins> |
+| Argus | – | – | – | – | – | – | – | 88.4 |
+| MapA-ray | <ins>53.6</ins> | <ins>31.2</ins> | 10.4 | 6.5 | 15.5 | 12.4 | 12.0 | 4.1 |
+| **Any3R** | **74.8** | **64.8** | **90.6** | **86.0** | **90.5** | **81.2** | **80.5** | **94.5** |
+| *AUC@30° ↑ (%)* | | | | | | | | |
+| OmniVGGT | 13.9 | 5.4 | 6.6 | 26.2 | 5.4 | 4.8 | 7.0 | 4.1 |
+| Wid3R | 67.0 | – | <ins>76.4</ins> | – | <ins>76.4</ins> | – | – | 89.0 |
+| PanoVGGT | 10.1 | 11.8 | 50.1 | <ins>42.6</ins> | 52.2 | <ins>63.5</ins> | <ins>69.7</ins> | <ins>93.2</ins> |
+| Argus | – | – | – | – | – | – | – | 91.3 |
+| MapA-ray | <ins>72.8</ins> | <ins>55.5</ins> | 25.5 | 19.7 | 34.9 | 30.2 | 32.8 | 14.1 |
+| **Any3R** | **85.0** | **78.3** | **93.9** | **91.6** | **94.6** | **89.6** | **88.5** | **96.6** |
 
-<b>Outdoor (PanoCity)</b> · Acc ↓ (m)
+<b>Outdoor (PanoCity)</b>
 
-| Method | Pinhole 90° | B–C 90° | Equi. 180° | ERP-crop 180° | MEI 180° | KB4 200° | DS 200° | ERP 360° |
+| Method | Pin. 90° | B–C 90° | Equi. 180° | ERP-C 180° | MEI 180° | KB4 200° | DS 200° | ERP 360° |
 |:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| *Acc ↓ (m)* | | | | | | | | |
 | OmniVGGT | 2.875 | 2.676 | 3.313 | 2.804 | 3.703 | 3.941 | 3.670 | 1.479 |
-| Wid3R | 2.278 | -- | 2.121 | -- | 2.252 | -- | -- | 2.330 |
-| PanoVGGT | 2.256 | 2.708 | 2.498 | 3.633 | 2.433 | 2.405 | 2.473 | 0.751 |
-| MapA-ray | 1.484 | 1.558 | 2.368 | 2.686 | 2.029 | 2.523 | 2.579 | 1.894 |
-| π³ | 1.479 | 1.711 | 2.093 | 2.426 | 2.036 | 2.394 | 2.271 | 1.628 |
-| MapAnything | 1.485 | 1.633 | 2.066 | 2.861 | 2.236 | 3.297 | 2.789 | 1.833 |
-| VGGT-Ω | 1.711 | 1.572 | 2.162 | 2.455 | 2.490 | 2.680 | 2.544 | 1.876 |
+| Wid3R | 2.278 | – | <ins>2.121</ins> | – | 2.252 | – | – | 2.330 |
+| PanoVGGT | 2.256 | 2.708 | 2.498 | 3.633 | 2.433 | <ins>2.405</ins> | <ins>2.473</ins> | <ins>0.751</ins> |
+| Argus | – | – | – | – | – | – | – | 1.517 |
+| MapA-ray | <ins>1.484</ins> | <ins>1.558</ins> | 2.368 | <ins>2.686</ins> | <ins>2.029</ins> | 2.523 | 2.579 | 1.894 |
 | **Any3R** | **1.160** | **1.243** | **0.866** | **0.811** | **0.854** | **0.863** | **0.901** | **0.663** |
+| *AUC@15° ↑ (%)* | | | | | | | | |
+| OmniVGGT | 1.9 | 0.7 | 3.7 | 8.5 | 3.2 | 3.1 | 5.4 | 4.2 |
+| Wid3R | 8.1 | – | 25.5 | – | 22.9 | – | – | 0.0 |
+| PanoVGGT | 10.8 | 10.1 | <ins>37.5</ins> | <ins>42.0</ins> | <ins>38.1</ins> | <ins>51.0</ins> | <ins>58.6</ins> | <ins>93.5</ins> |
+| Argus | – | – | – | – | – | – | – | 81.9 |
+| MapA-ray | <ins>56.3</ins> | <ins>45.0</ins> | 17.5 | 10.0 | 27.8 | 15.1 | 20.0 | 2.1 |
+| **Any3R** | **61.5** | **51.0** | **85.0** | **87.4** | **85.2** | **79.5** | **81.0** | **97.2** |
+| *AUC@30° ↑ (%)* | | | | | | | | |
+| OmniVGGT | 9.6 | 4.8 | 9.0 | 19.3 | 9.3 | 10.2 | 13.2 | 6.1 |
+| Wid3R | 22.8 | – | 47.9 | – | 42.6 | – | – | 0.0 |
+| PanoVGGT | 25.2 | 25.9 | <ins>61.0</ins> | <ins>62.7</ins> | <ins>62.0</ins> | <ins>73.9</ins> | <ins>78.2</ins> | <ins>96.8</ins> |
+| Argus | – | – | – | – | – | – | – | 90.5 |
+| MapA-ray | <ins>74.7</ins> | <ins>61.6</ins> | 33.3 | 23.1 | 49.4 | 31.9 | 39.4 | 6.3 |
+| **Any3R** | **80.7** | **74.2** | **92.5** | **93.7** | **92.6** | **89.4** | **90.5** | **98.6** |
 
-Wid3R receives the true ray field and supports the cameras it is defined for (-- otherwise). MapA-ray is MapAnything with the true ray field fed to its ray encoder.
+**Comparison with geometry foundation models.** Any3R\* is Any3R without its ray map (it then assumes an equirectangular grid) and is not ranked.
+
+<b>Indoor (Matterport3D + Stanford2D3DS)</b>
+
+| Method | Pin. 90° | B–C 90° | Equi. 180° | ERP-C 180° | MEI 180° | KB4 200° | DS 200° | ERP 360° |
+|:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| *Acc ↓ (m)* | | | | | | | | |
+| π³ | <ins>0.084</ins> | <ins>0.119</ins> | <ins>0.171</ins> | 0.287 | <ins>0.164</ins> | <ins>0.189</ins> | <ins>0.183</ins> | 0.414 |
+| MapAnything | 0.092 | 0.149 | 0.273 | 0.269 | 0.267 | 0.283 | 0.294 | <ins>0.386</ins> |
+| DA3 | 0.313 | 0.294 | 0.361 | 0.288 | 0.363 | 0.396 | 0.379 | 0.402 |
+| VGGT | 0.270 | 0.282 | 0.361 | 0.274 | 0.379 | 0.356 | 0.374 | 0.398 |
+| VGGT-Ω | 0.149 | 0.161 | 0.252 | <ins>0.265</ins> | 0.250 | 0.281 | 0.302 | 0.403 |
+| Any3R\* | 0.282 | 0.283 | 0.274 | 0.278 | 0.278 | 0.279 | 0.298 | 0.054 |
+| **Any3R** | **0.076** | **0.091** | **0.058** | **0.052** | **0.059** | **0.056** | **0.060** | **0.054** |
+| *AUC@15° ↑ (%)* | | | | | | | | |
+| π³ | **76.9** | <ins>53.5</ins> | <ins>42.1</ins> | 18.0 | <ins>43.1</ins> | <ins>35.2</ins> | <ins>34.6</ins> | 3.5 |
+| MapAnything | 53.6 | 28.5 | 13.2 | 9.0 | 10.8 | 8.8 | 8.4 | 6.4 |
+| DA3 | 7.8 | 2.7 | 0.9 | <ins>22.1</ins> | 1.2 | 0.4 | 0.7 | <ins>7.0</ins> |
+| VGGT | 23.3 | 9.9 | 5.2 | 14.2 | 5.3 | 5.0 | 2.9 | 3.3 |
+| VGGT-Ω | 63.5 | 50.4 | 31.3 | 15.0 | 29.6 | 24.0 | 19.5 | 6.9 |
+| Any3R\* | 24.0 | 43.8 | 48.3 | 41.7 | 48.2 | 55.0 | 58.5 | 94.5 |
+| **Any3R** | <ins>74.8</ins> | **64.8** | **90.6** | **86.0** | **90.5** | **81.2** | **80.5** | **94.5** |
+| *AUC@30° ↑ (%)* | | | | | | | | |
+| π³ | <ins>82.7</ins> | 66.0 | <ins>61.9</ins> | 37.1 | <ins>62.7</ins> | <ins>56.4</ins> | <ins>58.9</ins> | 14.1 |
+| MapAnything | 72.8 | 52.3 | 31.3 | 23.2 | 29.6 | 27.6 | 24.8 | 16.2 |
+| DA3 | 17.8 | 10.3 | 5.7 | <ins>46.2</ins> | 7.2 | 5.5 | 5.1 | 16.8 |
+| VGGT | 50.0 | 25.6 | 18.8 | 32.2 | 16.6 | 16.4 | 13.9 | 10.6 |
+| VGGT-Ω | 76.9 | <ins>69.7</ins> | 53.8 | 34.6 | 52.3 | 47.1 | 42.0 | <ins>17.8</ins> |
+| Any3R\* | 47.5 | 66.2 | 71.3 | 65.8 | 72.0 | 75.9 | 77.5 | 96.6 |
+| **Any3R** | **85.0** | **78.3** | **93.9** | **91.6** | **94.6** | **89.6** | **88.5** | **96.6** |
+
+<b>Outdoor (PanoCity)</b>
+
+| Method | Pin. 90° | B–C 90° | Equi. 180° | ERP-C 180° | MEI 180° | KB4 200° | DS 200° | ERP 360° |
+|:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| *Acc ↓ (m)* | | | | | | | | |
+| π³ | <ins>1.479</ins> | 1.711 | 2.093 | <ins>2.426</ins> | <ins>2.036</ins> | <ins>2.394</ins> | <ins>2.271</ins> | <ins>1.628</ins> |
+| MapAnything | 1.485 | 1.633 | <ins>2.066</ins> | 2.861 | 2.236 | 3.297 | 2.789 | 1.833 |
+| DA3 | 4.360 | 5.689 | 6.656 | 2.717 | 6.844 | 6.463 | 6.477 | 3.149 |
+| VGGT | 4.153 | 3.940 | 6.296 | 3.078 | 6.886 | 6.623 | 6.430 | 1.902 |
+| VGGT-Ω | 1.711 | <ins>1.572</ins> | 2.162 | 2.455 | 2.490 | 2.680 | 2.544 | 1.876 |
+| Any3R\* | 2.079 | 2.525 | 2.370 | 3.324 | 2.463 | 2.420 | 2.552 | 0.663 |
+| **Any3R** | **1.160** | **1.243** | **0.866** | **0.811** | **0.854** | **0.863** | **0.901** | **0.663** |
+| *AUC@15° ↑ (%)* | | | | | | | | |
+| π³ | 44.6 | 34.0 | 18.8 | <ins>15.9</ins> | <ins>20.0</ins> | 14.4 | <ins>16.0</ins> | 2.3 |
+| MapAnything | <ins>56.5</ins> | 20.6 | <ins>19.6</ins> | 10.6 | 17.1 | <ins>16.9</ins> | 13.8 | 0.1 |
+| DA3 | 4.8 | 3.0 | 6.4 | 7.7 | 4.9 | 3.4 | 4.6 | <ins>5.5</ins> |
+| VGGT | 15.1 | 2.6 | 3.7 | 9.5 | 6.5 | 5.5 | 7.3 | 0.9 |
+| VGGT-Ω | 45.5 | <ins>44.4</ins> | 15.8 | 8.1 | 15.6 | 13.8 | 8.8 | 3.9 |
+| Any3R\* | 20.1 | 36.0 | 45.0 | 29.9 | 47.3 | 48.8 | 50.1 | 97.2 |
+| **Any3R** | **61.5** | **51.0** | **85.0** | **87.4** | **85.2** | **79.5** | **81.0** | **97.2** |
+| *AUC@30° ↑ (%)* | | | | | | | | |
+| π³ | 61.7 | 47.1 | 36.1 | <ins>28.3</ins> | 37.3 | 30.0 | <ins>35.0</ins> | 4.8 |
+| MapAnything | <ins>74.8</ins> | 36.1 | <ins>41.9</ins> | 25.0 | <ins>39.7</ins> | <ins>34.2</ins> | 30.1 | 3.1 |
+| DA3 | 13.6 | 11.5 | 14.8 | 22.1 | 10.2 | 9.8 | 10.6 | <ins>11.3</ins> |
+| VGGT | 32.8 | 11.0 | 8.8 | 24.3 | 13.9 | 13.2 | 17.3 | 3.5 |
+| VGGT-Ω | 55.3 | <ins>54.7</ins> | 33.8 | 23.6 | 34.8 | 31.4 | 24.4 | 8.5 |
+| Any3R\* | 38.9 | 58.3 | 67.7 | 53.7 | 69.6 | 72.3 | 72.2 | 98.6 |
+| **Any3R** | **80.7** | **74.2** | **92.5** | **93.7** | **92.6** | **89.4** | **90.5** | **98.6** |
+
+**Zero-shot on real fisheye lenses:** the ScanNet++ DSLR fisheye (validation split) and the 200° lens of the FIORD rig, neither in Any3R's training data. † Wid3R is trained on ScanNet++. Any3R\* is not ranked.
+
+| Method | ScanNet++ Acc ↓ | AUC@15° ↑ | AUC@30° ↑ | FIORD Acc ↓ | AUC@15° ↑ | AUC@30° ↑ |
+|:---|:---:|:---:|:---:|:---:|:---:|:---:|
+| OmniVGGT | 0.097 | 18.6 | 41.5 | <ins>0.363</ins> | 18.6 | 40.3 |
+| Wid3R† | **0.039** | **85.3** | **92.6** | – | – | – |
+| PanoVGGT | 0.277 | 1.8 | 9.7 | 0.511 | <ins>29.4</ins> | <ins>51.2</ins> |
+| MapA-ray | 0.093 | 18.5 | 43.6 | 0.396 | 19.4 | 36.5 |
+| π³ | 0.086 | 20.6 | 46.6 | 0.378 | 15.7 | 36.7 |
+| MapAnything | 0.099 | 19.3 | 40.2 | 0.399 | 17.7 | 37.2 |
+| DA3 | 0.118 | 17.2 | 41.5 | 0.380 | 9.1 | 25.8 |
+| VGGT | 0.118 | 18.0 | 41.7 | 0.442 | 15.6 | 35.3 |
+| VGGT-Ω | 0.112 | 16.7 | 42.9 | 0.451 | 19.9 | 38.9 |
+| Any3R\* | 0.273 | 7.5 | 22.9 | 0.480 | 28.3 | 47.5 |
+| **Any3R** | <ins>0.055</ins> | <ins>62.7</ins> | <ins>79.7</ins> | **0.274** | **63.8** | **78.4** |
 
 ## Evaluation
 

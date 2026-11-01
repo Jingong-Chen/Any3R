@@ -10,7 +10,7 @@
 
 <a href="https://jingong-chen.github.io/Any3R/"><img src="https://img.shields.io/badge/Project-Page-4b6bfb?logo=googlechrome&logoColor=white" alt="Project Page"></a> <a href="https://arxiv.org/abs/2610.36150"><img src="https://img.shields.io/badge/arXiv-Paper-b31b1b?logo=arxiv&logoColor=white" alt="arXiv"></a> <a href="https://huggingface.co/Jingong/Any3R"><img src="https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Model-ffc107" alt="Hugging Face"></a> <a href="LICENSE"><img src="https://img.shields.io/badge/License-FAIR%20Noncommercial-6c757d" alt="License"></a>
 
-<img src="assets/teaser.gif" width="92%" alt="Any3R reconstructs a street from twenty views taken with eight different camera models">
+<img src="assets/teaser.gif" width="92%" alt="Any3R reconstructs a street from twenty views taken with eight different camera models; the views join one by one">
 
 </div>
 
@@ -123,6 +123,26 @@ Any3R is fine-tuned from VGGT-Omega for 40 epochs on Matterport3D, Stanford2D3DS
 ## Results
 
 All numbers are from the paper. The benchmark images every scene of three datasets through the same views with each camera model, and every method fuses its points with **its own predicted camera poses**. Acc (m, lower is better) is the mean distance from a reconstructed point to the ground truth; AUC@15° / AUC@30° (%, higher is better) is the area under the pairwise pose-error curve. In each table, the best value of a column is in **bold** and the second best <ins>underlined</ins>. The five held-out camera models are in the paper's appendix and in [eval/README.md](eval/README.md).
+
+### Eight camera models, seven methods
+
+<p align="center"><img src="assets/compare_cameras.jpg" width="100%" alt="Eight central camera models, seven methods, one scene per row"></p>
+
+One scene per row, each imaged by three views through one camera model. Every method fuses the same three views with its own predicted poses and is placed in the ground-truth frame by one similarity transform; the highest 30% of each indoor cloud is removed so the room can be seen from above. MapAny. is MapAnything and Any3R\* is Any3R without its ray map. The same data can be explored in 3D on the [project page](https://jingong-chen.github.io/Any3R/#compare).
+
+### Methods built for other cameras
+
+<p align="center"><img src="assets/compare_camera_aware.jpg" width="100%" alt="Comparison with camera-aware methods"></p>
+
+One scene per row and camera model. Wid3R receives the true ray field, Argus takes panoramas only, and n/a marks cameras a method cannot take.
+
+### Real fisheye lenses, zero-shot
+
+<p align="center"><img src="assets/zeroshot.jpg" width="62%" alt="Zero-shot reconstructions on real fisheye lenses"></p>
+
+ScanNet++ (DSLR fisheye) and FIORD (200° lens), neither in Any3R's training data. The samples shown are those on which Any3R leads the most; the averages over all samples are in the zero-shot table below.
+
+### Benchmark tables
 
 **Comparison with methods built for other cameras.** Wid3R receives the true ray field; MapA-ray is MapAnything with the true ray field fed to its ray encoder; – marks cameras a method cannot take.
 

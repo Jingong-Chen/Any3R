@@ -1,0 +1,19 @@
+{
+ "camera": {
+  "model": "OPENCV_FISHEYE",
+  "width": 3264,
+  "height": 3264,
+  "params": [
+   997.5113293346133,
+   1005.2394553958525,
+   1612.0,
+   1617.0,
+   0.036087615485948625,
+   -0.02348048096992612,
+   0.004204692520455132,
+   -0.0009094882726894559
+  ],
+  "fov_deg": 213.6
+ },
+ "note": "COLMAP OPENCV_FISHEYE calibration at the original 3264 x 3264 resolution; any3r rescales it to the image size. fov_deg is the measured lens support."
+}

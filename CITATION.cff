@@ -1,0 +1,30 @@
+cff-version: 1.2.0
+message: "If you use Any3R, please cite the paper below."
+title: "Any3R: Feedforward 3D Reconstruction from Any Camera Type"
+type: software
+repository-code: "https://github.com/Jingong-Chen/Any3R"
+url: "https://jingong-chen.github.io/Any3R/"
+license-url: "https://github.com/Jingong-Chen/Any3R/blob/main/LICENSE"
+authors:
+  - {family-names: Chen, given-names: Jingong}
+  - {family-names: Zhang, given-names: Qingwen}
+  - {family-names: Deng, given-names: Youming}
+  - {family-names: Pack, given-names: Chulwoo}
+  - {family-names: Wysocki, given-names: Olaf}
+  - {family-names: Jutzi, given-names: Boris}
+  - {family-names: Won, given-names: Kwanghee}
+  - {family-names: Gao, given-names: Kyle}
+preferred-citation:
+  type: article
+  title: "Any3R: Feedforward 3D Reconstruction from Any Camera Type"
+  journal: "arXiv preprint"
+  year: 2026
+  authors:
+    - {family-names: Chen, given-names: Jingong}
+    - {family-names: Zhang, given-names: Qingwen}
+    - {family-names: Deng, given-names: Youming}
+    - {family-names: Pack, given-names: Chulwoo}
+    - {family-names: Wysocki, given-names: Olaf}
+    - {family-names: Jutzi, given-names: Boris}
+    - {family-names: Won, given-names: Kwanghee}
+    - {family-names: Gao, given-names: Kyle}

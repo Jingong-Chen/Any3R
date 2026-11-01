@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "any3r"
+version = "1.0.0"
+description = "Any3R: feed-forward 3D reconstruction from any camera type"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {file = "LICENSE"}
+authors = [
+    {name = "Jingong Chen"}, {name = "Qingwen Zhang"}, {name = "Youming Deng"}, {name = "Chulwoo Pack"},
+    {name = "Olaf Wysocki"}, {name = "Boris Jutzi"}, {name = "Kwanghee Won"}, {name = "Kyle Gao"},
+]
+keywords = ["3d reconstruction", "camera pose estimation", "fisheye", "panorama", "omnidirectional", "feed-forward"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Image Recognition",
+]
+dependencies = [
+    "torch>=2.3",
+    "numpy",
+    "Pillow",
+    "safetensors",
+    "huggingface_hub>=0.23",
+]
+
+[project.optional-dependencies]
+demo = ["gradio>=5.31,<6", "trimesh>=4.0", "matplotlib"]
+dev = ["pytest", "opencv-python"]
+
+[project.urls]
+Homepage = "https://jingong-chen.github.io/Any3R/"
+Repository = "https://github.com/Jingong-Chen/Any3R"
+Weights = "https://huggingface.co/Jingong/Any3R"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["any3r*"]

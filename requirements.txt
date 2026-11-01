@@ -1,0 +1,5 @@
+torch>=2.3
+numpy
+Pillow
+safetensors
+huggingface_hub>=0.23

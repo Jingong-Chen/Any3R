@@ -1,0 +1,7 @@
+# Evaluation of the any-camera benchmark (in addition to the any3r package: pip install -e .)
+numpy>=1.26
+scipy>=1.11
+open3d==0.19.0          # the version of the paper's evaluation; ICP and normals are version-sensitive
+opencv-python>=4.8      # build_benchmark.py: dataset decoding and resizing (4.11 in the paper's builds)
+torch>=2.3
+pytest                  # eval/tests

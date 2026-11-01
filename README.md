@@ -8,7 +8,7 @@
 <sup>4</sup>Cornell University &nbsp; <sup>5</sup>University of Cambridge &nbsp; <sup>6</sup>Karlsruhe Institute of Technology<br>
 <sup>†</sup>Equal contribution &nbsp; <sup>*</sup>Corresponding author
 
-<a href="https://jingong-chen.github.io/Any3R/"><img src="https://img.shields.io/badge/Project-Page-4b6bfb?logo=googlechrome&logoColor=white" alt="Project Page"></a> <a href="https://arxiv.org/search/?query=Any3R%3A+Feedforward+3D+Reconstruction+from+Any+Camera+Type&searchtype=title"><img src="https://img.shields.io/badge/arXiv-Paper-b31b1b?logo=arxiv&logoColor=white" alt="arXiv"></a> <a href="https://huggingface.co/Jingong/Any3R"><img src="https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Model-ffc107" alt="Hugging Face"></a> <a href="LICENSE"><img src="https://img.shields.io/badge/License-FAIR%20Noncommercial-6c757d" alt="License"></a>
+<a href="https://jingong-chen.github.io/Any3R/"><img src="https://img.shields.io/badge/Project-Page-4b6bfb?logo=googlechrome&logoColor=white" alt="Project Page"></a> <a href="https://arxiv.org/abs/2610.36150"><img src="https://img.shields.io/badge/arXiv-Paper-b31b1b?logo=arxiv&logoColor=white" alt="arXiv"></a> <a href="https://huggingface.co/Jingong/Any3R"><img src="https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Model-ffc107" alt="Hugging Face"></a> <a href="LICENSE"><img src="https://img.shields.io/badge/License-FAIR%20Noncommercial-6c757d" alt="License"></a>
 
 <img src="assets/teaser.gif" width="92%" alt="Any3R reconstructs a street from twenty views taken with eight different camera models">
 
@@ -178,7 +178,7 @@ On the paper's configuration (A100, PyTorch 2.5.1) the released code and weights
   title   = {Any3R: Feedforward 3D Reconstruction from Any Camera Type},
   author  = {Chen, Jingong and Zhang, Qingwen and Deng, Youming and Pack, Chulwoo and
              Wysocki, Olaf and Jutzi, Boris and Won, Kwanghee and Gao, Kyle},
-  journal = {arXiv preprint},
+  journal = {arXiv preprint arXiv:2610.36150},
   year    = {2026}
 }
 ```

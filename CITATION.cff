@@ -17,7 +17,11 @@ authors:
 preferred-citation:
   type: article
   title: "Any3R: Feedforward 3D Reconstruction from Any Camera Type"
-  journal: "arXiv preprint"
+  journal: "arXiv preprint arXiv:2610.36150"
+  url: "https://arxiv.org/abs/2610.36150"
+  identifiers:
+    - type: doi
+      value: "10.48550/arXiv.2610.36150"
   year: 2026
   authors:
     - {family-names: Chen, given-names: Jingong}

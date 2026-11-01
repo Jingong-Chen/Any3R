@@ -34,6 +34,7 @@ dev = ["pytest", "opencv-python"]
 [project.urls]
 Homepage = "https://jingong-chen.github.io/Any3R/"
 Repository = "https://github.com/Jingong-Chen/Any3R"
+Paper = "https://arxiv.org/abs/2610.36150"
 Weights = "https://huggingface.co/Jingong/Any3R"
 
 [tool.setuptools.packages.find]

@@ -82,7 +82,7 @@ Only the 216 files per dataset named in the manifest are opened, and their md5 i
 | dataset | where | root argument | files per frame |
 |---|---|---|---|
 | Matterport3D | [niessner.github.io/Matterport](https://niessner.github.io/Matterport/) (terms of use): the `mp360` task data of the official download script, converted with `eval/prepare_matterport.py` (below) | `--m3d-root` | `<house>/pano_skybox_color/<view>.png` (H x W = 1024 x 2048), `<house>/pano_depth/<view>.png` (uint16, 1/4000 m), `<house>/pano_poses/<view>.txt` (4x4 camera-to-world) |
-| Stanford2D3DS | [buildingparser.stanford.edu](http://buildingparser.stanford.edu/dataset.html) (terms of use), the `no_xyz` release | `--s2d3ds-root` | `area_5b/pano/{rgb,depth,pose}/camera_<id>_<room>_frame_equirectangular_domain_{rgb.png,depth.png,pose.json}` (H x W = 2048 x 4096, depth uint16 1/512 m) |
+| Stanford2D3DS | [github.com/alexsax/2D-3D-Semantics](https://github.com/alexsax/2D-3D-Semantics) (terms of use), the `no_xyz` release | `--s2d3ds-root` | `area_5b/pano/{rgb,depth,pose}/camera_<id>_<room>_frame_equirectangular_domain_{rgb.png,depth.png,pose.json}` (H x W = 2048 x 4096, depth uint16 1/512 m) |
 | PanoCity | [huggingface.co/datasets/YijingGuo/PanoCity](https://huggingface.co/datasets/YijingGuo/PanoCity) (CC BY 4.0) | `--panocity-root` | `<city>/<city>_block<N>/pano_images/pano_<k>.png`, `.../panodepth_images/pano_depth_<k>.png` (uint16, cm), `<city>/<city>_block<N>/<city>_Pano_block<N>_poses.json` |
 
 The exact relative path and md5 of every file are in `benchmark/manifest.json`

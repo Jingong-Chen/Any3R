@@ -1,0 +1,32 @@
+[
+ {
+  "name": "street_mixed",
+  "title": "Street · 8 camera models",
+  "n_views": 20
+ },
+ {
+  "name": "fiord_meetingroom",
+  "title": "Real 214° fisheye · meeting room",
+  "n_views": 12
+ },
+ {
+  "name": "fiord_parakennus",
+  "title": "Real 226° fisheye · lobby",
+  "n_views": 12
+ },
+ {
+  "name": "panocity_kb4",
+  "title": "200° fisheye street",
+  "n_views": 12
+ },
+ {
+  "name": "panocity_pinhole",
+  "title": "Pinhole street",
+  "n_views": 16
+ },
+ {
+  "name": "panocity_erp",
+  "title": "360° panoramas",
+  "n_views": 8
+ }
+]

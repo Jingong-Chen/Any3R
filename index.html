@@ -4,96 +4,221 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Any3R: Feedforward 3D Reconstruction from Any Camera Type</title>
-  <meta name="description" content="Any3R: Feedforward 3D Reconstruction from Any Camera Type. Project page; paper on arXiv, code on GitHub.">
+  <meta name="description" content="Any3R reconstructs 3D scenes and camera poses from images of any central camera (pinhole, fisheye beyond 180°, 360° panoramas, or a mix) in one forward pass.">
   <meta property="og:title" content="Any3R: Feedforward 3D Reconstruction from Any Camera Type">
-  <meta property="og:description" content="A feed-forward model that reconstructs a scene and its camera poses from views of any mix of central cameras.">
+  <meta property="og:description" content="One feed-forward model for every central camera: pinhole, fisheye beyond 180°, 360° panoramas, and any mix of them.">
+  <meta property="og:image" content="https://jingong-chen.github.io/Any3R/static/video/teaser_poster.jpg">
   <meta property="og:url" content="https://jingong-chen.github.io/Any3R/">
-  <meta name="twitter:card" content="summary">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='none' stroke='%23363636' stroke-width='3'/%3E%3Ccircle cx='16' cy='16' r='4' fill='%23363636'/%3E%3C/svg%3E">
-  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro&display=swap" rel="stylesheet">
-  <style>
-    :root { --ink: #363636; --muted: #4a4a4a; --soft: #7a7a7a; --link: #3273dc; --btn: #363636; --btn-hover: #4a4a4a; }
-    * { box-sizing: border-box; }
-    html, body { margin: 0; background: #ffffff; color: var(--ink); }
-    body { font-family: "Noto Sans", "Helvetica Neue", Arial, sans-serif; font-size: 16px; line-height: 1.5; }
-    a { color: var(--link); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-    .hero { padding: 3rem 1.25rem 1.5rem; text-align: center; }
-    .container { max-width: 960px; margin: 0 auto; }
-    h1.title { font-family: "Google Sans", "Noto Sans", sans-serif; font-weight: 400; font-size: 2.75rem; line-height: 1.2;
-               margin: 0 0 1.25rem; color: var(--ink); text-wrap: balance; }
-    .authors { font-family: "Google Sans", "Noto Sans", sans-serif; font-size: 1.25rem; line-height: 1.7; color: var(--ink); }
-    .author { display: inline-block; margin: 0 0.45rem; white-space: nowrap; }
-    sup { font-size: 0.7em; line-height: 0; }
-    .affiliations { font-family: "Google Sans", "Noto Sans", sans-serif; font-size: 1.1rem; color: var(--muted); margin-top: 0.75rem; line-height: 1.7; }
-    .affiliation { display: inline-block; margin: 0 0.6rem; white-space: nowrap; }
-    .notes { font-size: 0.95rem; color: var(--soft); margin-top: 0.4rem; }
-    .notes span { margin: 0 0.6rem; }
-    .links { display: flex; flex-wrap: wrap; gap: 0.6rem; justify-content: center; margin-top: 1.5rem; }
-    .button { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.55rem 1.25rem; border-radius: 290486px;
-              background: var(--btn); color: #ffffff; font-family: "Google Sans", "Noto Sans", sans-serif; font-size: 1.05rem; }
-    .button:hover { background: var(--btn-hover); text-decoration: none; }
-    .button:focus-visible { outline: 3px solid var(--link); outline-offset: 2px; }
-    .button svg { width: 1.15em; height: 1.15em; fill: currentColor; }
-    .soon { padding: 2.5rem 1.25rem 4rem; text-align: center; }
-    .soon h2 { font-family: "Google Sans", "Noto Sans", sans-serif; font-weight: 400; font-size: 2rem; margin: 0 0 0.75rem; color: var(--ink); }
-    .soon p { max-width: 42rem; margin: 0 auto; color: var(--muted); font-size: 1.05rem; }
-    footer { border-top: 1px solid #ededed; padding: 1.5rem 1.25rem; text-align: center; font-size: 0.85rem; color: var(--soft); }
-    @media (max-width: 640px) {
-      h1.title { font-size: 2rem; }
-      .authors { font-size: 1.1rem; }
-      .affiliations { font-size: 1rem; }
-    }
-  </style>
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="static/img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="static/css/style.css">
+  <script type="importmap">
+    {"imports": {"three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+                 "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}
+  </script>
 </head>
 <body>
-  <section class="hero">
-    <div class="container">
-      <h1 class="title">Any3R: Feedforward 3D Reconstruction<br>from Any Camera Type</h1>
 
-      <div class="authors">
-        <span class="author">Jingong Chen<sup>1,2</sup></span>
-        <span class="author">Qingwen Zhang<sup>3&dagger;</sup></span>
-        <span class="author">Youming Deng<sup>4&dagger;</sup></span>
-        <span class="author">Chulwoo Pack<sup>1</sup></span>
-        <span class="author">Olaf Wysocki<sup>5</sup></span>
-        <span class="author">Boris Jutzi<sup>6</sup></span>
-        <span class="author">Kwanghee Won<sup>1*</sup></span>
-        <span class="author">Kyle Gao<sup>2</sup></span>
-      </div>
+<header class="hero">
+  <h1 class="title"><span class="wordmark">Any3R</span>: Feedforward 3D Reconstruction<br>from Any Camera Type</h1>
+  <div class="authors">
+    <span>Jingong Chen<sup>1,2</sup></span>
+    <span>Qingwen Zhang<sup>3†</sup></span>
+    <span>Youming Deng<sup>4†</sup></span>
+    <span>Chulwoo Pack<sup>1</sup></span>
+    <i class="break"></i>
+    <span>Olaf Wysocki<sup>5</sup></span>
+    <span>Boris Jutzi<sup>6</sup></span>
+    <span>Kwanghee Won<sup>1*</sup></span>
+    <span>Kyle Gao<sup>2</sup></span>
+  </div>
+  <div class="affils">
+    <span><sup>1</sup>South Dakota State University</span>
+    <span><sup>2</sup>Aalto University</span>
+    <span><sup>3</sup>KTH Royal Institute of Technology</span>
+    <i class="break"></i>
+    <span><sup>4</sup>Cornell University</span>
+    <span><sup>5</sup>University of Cambridge</span>
+    <span><sup>6</sup>Karlsruhe Institute of Technology</span>
+  </div>
+  <div class="notes"><sup>†</sup>Equal contribution &nbsp;&nbsp; <sup>*</sup>Corresponding author</div>
+  <nav class="links">
+    <a class="pill" id="arxiv-link" href="https://arxiv.org/search/?query=Any3R%3A+Feedforward+3D+Reconstruction+from+Any+Camera+Type&amp;searchtype=title"><i class="ai ai-arxiv"></i>arXiv</a>
+    <a class="pill" href="https://github.com/Jingong-Chen/Any3R"><i class="fab fa-github"></i>Code</a>
+    <a class="pill" href="https://huggingface.co/Jingong/Any3R"><span class="emoji">🤗</span>Model</a>
+    <a class="pill" href="https://github.com/Jingong-Chen/Any3R#demos"><i class="fas fa-wand-magic-sparkles"></i>Demo</a>
+    <a class="pill" href="#bibtex"><i class="fas fa-quote-right"></i>BibTeX</a>
+  </nav>
+</header>
 
-      <div class="affiliations">
-        <span class="affiliation"><sup>1</sup>South Dakota State University</span>
-        <span class="affiliation"><sup>2</sup>Aalto University</span>
-        <span class="affiliation"><sup>3</sup>KTH Royal Institute of Technology</span>
-        <span class="affiliation"><sup>4</sup>Cornell University</span>
-        <span class="affiliation"><sup>5</sup>University of Cambridge</span>
-        <span class="affiliation"><sup>6</sup>Karlsruhe Institute of Technology</span>
-      </div>
-      <div class="notes"><span><sup>&dagger;</sup>Equal contribution</span><span><sup>*</sup>Corresponding author</span></div>
+<section class="teaser wide">
+  <video autoplay muted loop playsinline preload="auto" poster="static/video/teaser_poster.jpg">
+    <source src="static/video/teaser.mp4" type="video/mp4">
+  </video>
+  <p class="caption">Twenty views of one street, each taken through one of eight camera models from a 90° pinhole to a 360° panorama, reconstructed together by Any3R in a single forward pass with its own predicted camera poses. The views are shown joining one by one along the street.</p>
+</section>
 
-      <nav class="links" aria-label="Paper and code">
-        <a class="button" id="arxiv-link" href="https://arxiv.org/search/?query=Any3R%3A+Feedforward+3D+Reconstruction+from+Any+Camera+Type&amp;searchtype=title">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h8l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Zm7 1.5V8h4.5L13 3.5ZM8 12v1.6h8V12H8Zm0 3.4V17h8v-1.6H8Zm0-6.8v1.6h4V8.6H8Z"/></svg>
-          <span>arXiv</span>
-        </a>
-        <a class="button" href="https://github.com/Jingong-Chen/Any3R">
-          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38v-1.33c-2.23.48-2.7-1.07-2.7-1.07-.36-.92-.89-1.17-.89-1.17-.73-.5.06-.49.06-.49.8.06 1.23.83 1.23.83.72 1.22 1.88.87 2.34.66.07-.52.28-.87.5-1.07-1.78-.2-3.65-.89-3.65-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.6 7.6 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48v2.2c0 .21.15.46.55.38A8 8 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
-          <span>Code</span>
-        </a>
-      </nav>
+<section class="narrow">
+  <div class="tldr"><b>TL;DR</b> &nbsp;Any3R is a feed-forward 3D reconstruction model that works with <em>any</em> central camera, including fisheyes beyond 180°, 360° panoramas and any mix of lenses in one scene, because it reads each view's <b>ray field</b> instead of assuming a pinhole.</div>
+
+  <h2>Abstract</h2>
+  <p class="justify">Geometry foundation models recover camera poses and dense geometry from a set of images with a feed-forward network, but they expect pinhole images. That assumption is inside the backbone too: the positional encoding and the training loss both bind an image position to a direction in space, and both depend on the lens. We condition both on the dense ray field, the unit direction through every pixel, which describes any central camera without a lens type, distortion coefficients or a bound on field of view. <em>Angular coordinates</em> give the rotary encoding the measured ray angle of each patch, evaluated per view, and <em>solid-angle weighting</em> scales the point loss by the area each pixel covers on the sphere, so neither the encoding nor the supervision depends on the lens. <b>Any3R</b> is therefore a feed-forward model that takes any central camera, and is robust to mixing many camera types per scene, with no retraining per lens. On a benchmark of thirteen central cameras across three datasets, where every method reconstructs with its own predicted camera poses, it is the most consistently accurate method. <b>Any3R</b> enables scalable 3D reconstruction from heterogeneous crowdsourced and archival imagery collections sourced across diverse camera types.</p>
+</section>
+
+<section id="gallery" class="wide">
+  <h2>Interactive results</h2>
+  <p class="lead">Point clouds and cameras predicted by the released model in one forward pass, with its own camera poses, for real fisheyes, rendered lenses and panoramas. The views join one by one when a scene opens (press ▶ to replay). For the web, low-confidence points and points no other view confirms are dropped. Drag to orbit, right-drag to pan, scroll to zoom; camera markers are coloured by field of view.</p>
+  <div class="viewer-box">
+    <div class="viewer-canvas"></div>
+    <div class="viewer-info"></div>
+    <div class="viewer-status">Loading…</div>
+    <div class="viewer-tools">
+      <button class="tool btn-replay" title="Replay: add the views one by one"><i class="fas fa-play"></i></button>
+      <button class="tool btn-rotate on" title="Auto-rotate"><i class="fas fa-rotate"></i></button>
+      <button class="tool btn-cams on" title="Show cameras"><i class="fas fa-video"></i></button>
+      <button class="tool btn-gcut on" title="Cut the ceiling to look into the room" hidden><i class="fas fa-scissors"></i></button>
+      <button class="tool btn-reset" title="Reset view"><i class="fas fa-house"></i></button>
+      <button class="tool btn-full" title="Full screen"><i class="fas fa-expand"></i></button>
+      <label class="tool size" title="Point size"><i class="fas fa-circle-dot"></i><input class="size-slider" type="range" min="0.3" max="3" step="0.05" value="1"></label>
     </div>
-  </section>
-
-  <section class="soon">
-    <div class="container">
-      <h2>Coming soon</h2>
-      <p>Results, videos and code will be released here. The paper is on arXiv, and the code will be published in the GitHub repository.</p>
+    <div class="legend">
+      <span style="--c:#2f6db5">≤ 100°</span><span style="--c:#1a9e8f">180°</span><span style="--c:#e08a00">200°+</span><span style="--c:#7b4fbf">360°</span>
     </div>
-  </section>
+  </div>
+  <div class="input-strip"></div>
+  <div class="scene-picker"></div>
+</section>
 
-  <footer>
-    <div class="container">Any3R &middot; <a href="https://github.com/Jingong-Chen/Any3R">github.com/Jingong-Chen/Any3R</a></div>
-  </footer>
+
+<section id="motivation" class="wide">
+  <h2>Why the ray field matters</h2>
+  <p class="lead">A pixel grid says where a patch sits in the image, not where it looks: the same patch stands for a different direction, and a pixel for a different solid angle, on every lens. Below, the same network runs with its ray field withheld (it then reads every frame as a panorama) and supplied. The spheres show where each pixel of the first view is sent; the clouds fuse all three views with predicted poses.</p>
+  <div class="row-chips motiv-chips"></div>
+  <div class="cmp-head">
+    <div class="motiv-caption cmp-caption"></div>
+    <img class="motiv-input" alt="first input view">
+  </div>
+  <div class="motiv-grid">
+    <div class="motiv-col withheld">
+      <div class="motiv-label bad"><i class="fas fa-circle-xmark"></i> Ray field withheld</div>
+      <div class="motiv-pair">
+        <figure><div class="viewer-box sphere"><div class="viewer-canvas"></div></div><figcaption>Rays</figcaption></figure>
+        <figure><img class="depth" alt="predicted distance"><figcaption>Distance</figcaption></figure>
+      </div>
+      <div class="viewer-box small recon"><div class="viewer-canvas"></div></div>
+    </div>
+    <div class="motiv-col supplied">
+      <div class="motiv-label good"><i class="fas fa-circle-check"></i> Ray field supplied</div>
+      <div class="motiv-pair">
+        <figure><div class="viewer-box sphere"><div class="viewer-canvas"></div></div><figcaption>Rays</figcaption></figure>
+        <figure><img class="depth" alt="predicted distance"><figcaption>Distance</figcaption></figure>
+      </div>
+      <div class="viewer-box small recon"><div class="viewer-canvas"></div></div>
+    </div>
+  </div>
+  <div class="cmp-tools">
+    <button class="tool-text btn-mcut on"><i class="fas fa-scissors"></i> Cut ceiling</button>
+    <button class="tool-text btn-mgt"><i class="fas fa-ruler-combined"></i> Show ground truth</button>
+  </div>
+  <p class="small-note">Data of the paper's motivation figure. Withheld, the reconstruction follows the panorama reading, which is correct only at 360°.</p>
+</section>
+
+<section class="narrow">
+  <h2>How it works</h2>
+  <p class="justify">A central camera is fully described by the direction of the ray through each pixel, whatever the lens. Any3R takes this ray field with every view and uses it in the two places where a pinhole model silently assumes a lens.</p>
+</section>
+<section class="wide">
+  <img class="figure" src="static/img/method.png" alt="Any3R architecture">
+  <div class="cards">
+    <div class="card"><div class="card-icon"><i class="fas fa-arrows-to-dot"></i></div><h3>Ray field in, any lens</h3><p>Each view comes with the unit ray of every pixel, computed from any calibration: pinhole, distortion polynomials, fisheye models or panoramas. Views with different cameras and sizes share one forward pass.</p></div>
+    <div class="card"><div class="card-icon"><i class="fas fa-compass"></i></div><h3>Angular coordinates</h3><p>The rotary position embedding locates each patch by the measured elevation and azimuth of its rays, per view, instead of its row and column, so attention sees where a patch looks rather than where it sits in the image.</p></div>
+    <div class="card"><div class="card-icon"><i class="fas fa-earth-europe"></i></div><h3>Solid-angle weighting</h3><p>The point loss is weighted by the area each pixel covers on the sphere, so every direction counts by how much of the world it covers, not by how many pixels a lens happens to spend on it.</p></div>
+  </div>
+</section>
+
+<section class="narrow">
+  <h2>Thirteen camera models, one set of weights</h2>
+  <p class="justify">The benchmark images every scene through the same views with thirteen central camera models, from a 90° pinhole to 360° panoramas. Eight are used in training and five are held out. Each panel shows how a model maps the incidence angle θ to the image, as a 2D section and as a 3D ray field.</p>
+</section>
+<section class="wide">
+  <details class="fold">
+    <summary><span>Show the thirteen camera models</span><i class="fas fa-chevron-down"></i></summary>
+    <img class="figure" src="static/img/camera_models.png" alt="The thirteen camera models of the benchmark" loading="lazy">
+  </details>
+</section>
+
+<section id="compare" class="wide">
+  <h2>Same views, seven methods</h2>
+  <p class="lead">Each scene is imaged by three views through one camera model. Every method fuses its own per-view points with its <b>own predicted poses</b>, and one similarity transform places each cloud in the ground-truth frame. The two viewers share one camera; pick a method above each.</p>
+  <div class="row-chips"></div>
+  <div class="cmp-head">
+    <div class="cmp-caption"></div>
+    <div class="cmp-inputs"></div>
+  </div>
+  <div class="cmp-grid">
+    <div class="cmp-pane"><div class="method-buttons"></div><div class="viewer-box small"><div class="viewer-canvas"></div><div class="viewer-status">Loading…</div></div></div>
+    <div class="cmp-pane"><div class="method-buttons"></div><div class="viewer-box small"><div class="viewer-canvas"></div><div class="viewer-status">Loading…</div></div></div>
+  </div>
+  <div class="cmp-tools">
+    <button class="tool-text btn-cut on" title="Remove each cloud's highest 30% of points to look into the room"><i class="fas fa-scissors"></i> Cut ceiling</button>
+    <button class="tool-text btn-cmp-reset"><i class="fas fa-house"></i> Reset view</button>
+    <label class="tool-text"><i class="fas fa-circle-dot"></i> Point size <input class="cmp-size" type="range" min="0.3" max="3" step="0.05" value="1"></label>
+  </div>
+  <p class="small-note">Data of the paper's eight-camera comparison figure (120k points per cloud). Indoor clouds hide their own highest 30% of points, the same rule for every method, so the room can be seen from above.</p>
+</section>
+
+<section id="results" class="wide">
+  <h2>Quantitative results</h2>
+  <p class="lead">Acc is the mean distance from a reconstructed point to the ground truth (metres, lower is better); AUC is the area under the pairwise pose-error curve up to 15° and 30° (higher is better). All methods use their own predicted poses. <span class="best-key">best</span> <span class="second-key">second</span></p>
+  <div class="table-controls">
+    <div class="tabs">
+      <button class="tab" data-t="gfm">Geometry foundation models</button>
+      <button class="tab" data-t="camaware">Camera-aware methods</button>
+      <button class="tab" data-t="zeroshot">Zero-shot real lenses</button>
+    </div>
+    <div class="measure-toggle">
+      <button class="meas" data-m="0">Acc ↓</button><button class="meas" data-m="1">AUC@15° ↑</button><button class="meas" data-m="2">AUC@30° ↑</button>
+    </div>
+  </div>
+  <div class="table-box"></div>
+  <p class="small-note table-note"></p>
+</section>
+
+<section class="wide">
+  <h2>Real lenses, zero-shot</h2>
+  <p class="lead">Two real fisheye datasets that Any3R never saw: the ScanNet++ DSLR fisheye and the 200° lens of the FIORD rig. The samples shown are those on which Any3R leads the most; averages over all samples are in the zero-shot table above.</p>
+  <img class="figure tall" src="static/img/zeroshot_qual.jpg" alt="Zero-shot reconstructions on real fisheye lenses" loading="lazy">
+  <h2 class="mt">Against camera-aware methods</h2>
+  <p class="lead">One scene per row and camera model; every method fuses the same three native views with its own predicted poses.</p>
+  <img class="figure" src="static/img/rivals_qual.jpg" alt="Comparison with camera-aware methods" loading="lazy">
+</section>
+
+<section id="bibtex" class="narrow">
+  <h2>BibTeX</h2>
+  <div class="bibtex">
+    <button id="copy-bibtex">Copy</button>
+<pre id="bibtex-text">@article{chen2026any3r,
+  title   = {Any3R: Feedforward 3D Reconstruction from Any Camera Type},
+  author  = {Chen, Jingong and Zhang, Qingwen and Deng, Youming and Pack, Chulwoo and
+             Wysocki, Olaf and Jutzi, Boris and Won, Kwanghee and Gao, Kyle},
+  journal = {arXiv preprint},
+  year    = {2026}
+}</pre>
+  </div>
+
+  <h2>Acknowledgments</h2>
+  <p class="justify">This work was supported by the U.S. National Science Foundation under Grant No. 2316400 and by the Wallenberg AI, Autonomous Systems and Software Program (WASP) funded by the Knut and Alice Wallenberg Foundation. The computations and data handling were enabled by the Arrhenius HPC resource provided by the National Academic Infrastructure for Supercomputing in Sweden, and by the South Dakota State University High Performance Computing (SDSU HPC) team. Any3R builds on VGGT-Omega and PanoVGGT. Example scenes are from PanoCity (CC BY 4.0) and FIORD (CC BY 4.0).</p>
+</section>
+
+<footer>
+  <p>This page is adapted from the <a href="https://github.com/nerfies/nerfies.github.io">Nerfies</a> template (CC BY-SA 4.0). Point clouds are rendered with <a href="https://threejs.org">three.js</a>.</p>
+</footer>
+
+<script type="module" src="static/js/main.js"></script>
 </body>
 </html>

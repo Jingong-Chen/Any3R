@@ -1,20 +1,62 @@
 # Copyright (c) 2026 The Any3R Authors.
-# Portions adapted from PanoVGGT (MIT License, Copyright (c) 2026 Yijing Guo) and VGGT-Omega
-# (Copyright (c) Meta Platforms, Inc. and affiliates, FAIR Noncommercial Research License).
+# Adapted from VGGT-Omega (Copyright (c) Meta Platforms, Inc. and affiliates) and PanoVGGT (MIT License,
+# Copyright (c) 2026 Yijing Guo).
 #
-# This source code is licensed under the license found in the LICENSE file in the root directory
-# of this source tree.
+# This file is a derivative of VGGT-Omega and is licensed under the FAIR Noncommercial Research License
+# found in the LICENSE-FAIR file in the root directory of this source tree. It is the only part of the
+# any3r package, besides the vendored any3r/_vggt_omega, that is not under the MIT license.
 
-"""Ray-conditioned aggregator: the VGGT-Omega aggregator with
-  * angular coordinates for the rotary position embedding (frame attention), per view, and
-  * an absolute position embedding alpha * MLP([sin lat, cos lat, sin lon, cos lon]) evaluated at
-    each patch's mean ray, added to the patch tokens before every attention block.
+"""The VGGT-Omega trunk, conditioned on the ray field:
+
+  * AngularRope feeds the backbone's rotary position embedding with angular coordinates computed per
+    view from the patch rays (any3r/angular_rope.py) instead of patch row and column;
+  * RayAggregator adds an absolute position embedding alpha * MLP([sin lat, cos lat, sin lon, cos lon]),
+    evaluated at each patch's mean ray, to the patch tokens before every attention block;
+  * run_trunk runs the aggregator under bfloat16 autocast and the camera and dense heads in float32.
 """
+import math
+
 import torch
 import torch.nn as nn
 
 from ._vggt_omega.models.aggregator import Aggregator, slice_expand_and_flatten
-from .angular_rope import AngularRope
+from .angular_rope import banded_rope_coords
+
+
+class AngularRope(nn.Module):
+    """Wraps the backbone's RopePositionEmbedding (kept as `.rope`, so its `periods` buffer keeps the
+    checkpoint key `rope_embed.rope.periods`) and computes its coordinates from patch rays."""
+
+    def __init__(self, rope, band_split: int = 8):
+        super().__init__()
+        self.rope = rope
+        self.band_split = int(band_split)
+
+    def forward(self, H: int, W: int, patch_rays=None):
+        if patch_rays is None:
+            return self.rope(H=H, W=W)
+        periods = self.rope.periods
+        device, dtype = periods.device, self.rope.dtype
+        # float64 for the angle round trip, so that on an equirectangular grid the coordinates match
+        # the stock ones to float32 precision
+        r = patch_rays.to(device=device, dtype=torch.float64)
+        batched = r.dim() == 3
+        coords = banded_rope_coords(r, H, W, int(periods.numel()), self.band_split,
+                                    self.rope.normalize_coords).to(dtype)
+        angles = 2 * math.pi * coords / (periods if not batched else periods[None, None, None, :])
+        if batched:
+            angles = angles.flatten(2, 3).tile(1, 1, 2).unsqueeze(1)
+        else:
+            angles = angles.flatten(1, 2).tile(2)
+        return torch.sin(angles), torch.cos(angles)
+
+    def _load_from_state_dict(self, state_dict, prefix, local_metadata, strict,
+                              missing_keys, unexpected_keys, error_msgs):
+        old, new = prefix + "periods", prefix + "rope.periods"
+        if old in state_dict and new not in state_dict:
+            state_dict[new] = state_dict.pop(old)
+        return super()._load_from_state_dict(state_dict, prefix, local_metadata, strict,
+                                             missing_keys, unexpected_keys, error_msgs)
 
 
 class RayAggregator(Aggregator):
@@ -71,3 +113,17 @@ class RayAggregator(Aggregator):
             outputs.append(torch.cat([frame_tokens, tokens], dim=-1)
                            if block_idx in self.cached_layer_indices else None)
         return outputs, self.patch_token_start
+
+
+def run_trunk(model, images, ray_features, patch_rays):
+    """Aggregator under bfloat16 autocast (float16 where bf16 is unsupported), heads in float32.
+    `model` holds .aggregator, .camera_head, .dense_head and .frames_chunk_size.
+    Returns pose_enc (B, S, 9), depth (B, S, H, W, 1) and depth_conf (B, S, H, W)."""
+    amp_dtype = torch.bfloat16 if (images.is_cuda and torch.cuda.is_bf16_supported()) else torch.float16
+    with torch.autocast(device_type=images.device.type, dtype=amp_dtype, enabled=images.is_cuda):
+        tokens_list, patch_token_start = model.aggregator(images, ray_features, patch_rays)
+    with torch.autocast(device_type=images.device.type, enabled=False):
+        pose_enc = model.camera_head(tokens_list, patch_token_start=patch_token_start)
+        depth, depth_conf = model.dense_head(tokens_list, images=images, patch_token_start=patch_token_start,
+                                             frames_chunk_size=model.frames_chunk_size)
+    return pose_enc, depth, depth_conf

@@ -1,6 +1,6 @@
 # Copyright (c) 2026 The Any3R Authors.
 #
-# This source code is licensed under the license found in the LICENSE file in the root directory
+# This source code is licensed under the MIT license found in the LICENSE file in the root directory
 # of this source tree.
 
 """Input preparation: images and cameras -> the (images, ray_maps) pair Any3R takes.

@@ -1,12 +1,15 @@
 # Third-party notices
 
-Any3R is built on the following work. Their licenses apply to the corresponding parts of this repository and of the released weights.
+Any3R is built on the following work. Their licenses apply to the corresponding parts of this repository and of the released weights; everything else is under the MIT License.
 
 ## VGGT-Omega
 
-Any3R's network trunk, camera head and dense head are those of VGGT-Omega, and the Any3R weights are fine-tuned from the VGGT-Omega weights. The code in `any3r/_vggt_omega/` is a copy of the VGGT-Omega inference package (imports renamed, otherwise unchanged).
+Any3R's network trunk, camera head and dense head are those of VGGT-Omega, and the Any3R weights are fine-tuned from the VGGT-Omega weights.
 
-Copyright (c) Meta Platforms, Inc. and affiliates. Licensed under the FAIR Noncommercial Research License, a copy of which is provided in [`LICENSE`](LICENSE). Under that license this repository, the Any3R weights and any derivative of them are distributed under the same terms, for noncommercial research use only.
+- `any3r/_vggt_omega/` is a copy of the VGGT-Omega inference package (imports renamed, otherwise unchanged).
+- `any3r/aggregator.py` is adapted from VGGT-Omega's aggregator.
+
+Copyright (c) Meta Platforms, Inc. and affiliates. These files and the Any3R weights are licensed under the FAIR Noncommercial Research License, a copy of which is provided in [`LICENSE-FAIR`](LICENSE-FAIR) and in `any3r/_vggt_omega/LICENSE`; under that license they are distributed under the same terms, for noncommercial research use only. All other code in this repository is under the MIT License ([`LICENSE`](LICENSE)).
 
 ## PanoVGGT
 

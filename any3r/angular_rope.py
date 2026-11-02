@@ -1,6 +1,6 @@
 # Copyright (c) 2026 The Any3R Authors.
 #
-# This source code is licensed under the license found in the LICENSE file in the root directory
+# This source code is licensed under the MIT license found in the LICENSE file in the root directory
 # of this source tree.
 
 """Angular coordinates for the rotary position embedding (Sec. 3.2 of the paper).
@@ -16,7 +16,8 @@ on an equirectangular grid (at patch centres), so the pretrained encoding is kep
 The released model splits the 16 RoPE frequencies: the 8 lowest frequencies use the absolute angles
 above (one coordinate unit is the same angle on every camera), and the 8 highest frequencies divide
 by the view's own half extents instead, so that they span each camera's field of view.
-Coordinates are computed per view, from that view's own rays.
+Coordinates are computed per view, from that view's own rays. The rotary embedding that consumes
+them is in any3r/aggregator.py.
 """
 import math
 
@@ -62,39 +63,3 @@ def banded_rope_coords(ray_patch, Hp, Wp, n_periods, split, normalize_coords="ma
     out = lo.unsqueeze(-1).expand(*lo.shape, n_periods).clone()
     out[..., :split] = hi.unsqueeze(-1).expand(*hi.shape, split)
     return out
-
-
-class AngularRope(torch.nn.Module):
-    """Wraps the backbone's RopePositionEmbedding (kept as `.rope`, so its `periods` buffer keeps
-    the checkpoint key `rope_embed.rope.periods`) and computes its coordinates from patch rays."""
-
-    def __init__(self, rope, band_split: int = 8):
-        super().__init__()
-        self.rope = rope
-        self.band_split = int(band_split)
-
-    def forward(self, H: int, W: int, patch_rays=None):
-        if patch_rays is None:
-            return self.rope(H=H, W=W)
-        periods = self.rope.periods
-        device, dtype = periods.device, self.rope.dtype
-        # float64 for the angle round trip, so that on an equirectangular grid the coordinates
-        # match the stock ones to float32 precision
-        r = patch_rays.to(device=device, dtype=torch.float64)
-        batched = r.dim() == 3
-        coords = banded_rope_coords(r, H, W, int(periods.numel()), self.band_split,
-                                    self.rope.normalize_coords).to(dtype)
-        angles = 2 * math.pi * coords / (periods if not batched else periods[None, None, None, :])
-        if batched:
-            angles = angles.flatten(2, 3).tile(1, 1, 2).unsqueeze(1)
-        else:
-            angles = angles.flatten(1, 2).tile(2)
-        return torch.sin(angles), torch.cos(angles)
-
-    def _load_from_state_dict(self, state_dict, prefix, local_metadata, strict,
-                              missing_keys, unexpected_keys, error_msgs):
-        old, new = prefix + "periods", prefix + "rope.periods"
-        if old in state_dict and new not in state_dict:
-            state_dict[new] = state_dict.pop(old)
-        return super()._load_from_state_dict(state_dict, prefix, local_metadata, strict,
-                                             missing_keys, unexpected_keys, error_msgs)

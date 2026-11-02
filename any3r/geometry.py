@@ -1,7 +1,7 @@
 # Copyright (c) 2026 The Any3R Authors.
 # Portions adapted from PanoVGGT (MIT License, Copyright (c) 2026 Yijing Guo).
 #
-# This source code is licensed under the license found in the LICENSE file in the root directory
+# This source code is licensed under the MIT license found in the LICENSE file in the root directory
 # of this source tree.
 
 """Ray-field geometry used by the model.

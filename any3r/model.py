@@ -1,9 +1,9 @@
 # Copyright (c) 2026 The Any3R Authors.
-# Portions adapted from PanoVGGT (MIT License, Copyright (c) 2026 Yijing Guo) and VGGT-Omega
-# (Copyright (c) Meta Platforms, Inc. and affiliates, FAIR Noncommercial Research License).
 #
-# This source code is licensed under the license found in the LICENSE file in the root directory
-# of this source tree.
+# This source code is licensed under the MIT license found in the LICENSE file in the root directory
+# of this source tree. It builds the network from components under the FAIR Noncommercial Research
+# License (any3r/aggregator.py and the vendored any3r/_vggt_omega, see LICENSE-FAIR), and the model
+# weights are under that license too.
 
 """Any3R: feed-forward 3D reconstruction from views of any central camera.
 
@@ -17,7 +17,7 @@ import torch.nn.functional as F
 
 from ._vggt_omega.models.heads import CameraHead, DenseHead
 from ._vggt_omega.utils.rotation import quat_to_mat
-from .aggregator import RayAggregator
+from .aggregator import RayAggregator, run_trunk
 from .geometry import (erp_directions_cached, homogenize_points, patch_mean_rays,
                        pose_encoding_to_c2w, raymap_to_patch_features)
 
@@ -83,18 +83,12 @@ class Any3R(nn.Module, PyTorchModelHubMixin,
         ray_features = raymap_to_patch_features(ray_maps, Hp, Wp)
         patch_rays = patch_mean_rays(ray_maps, Hp, Wp)
 
-        amp_dtype = torch.bfloat16 if (images.is_cuda and torch.cuda.is_bf16_supported()) else torch.float16
-        with torch.autocast(device_type=images.device.type, dtype=amp_dtype, enabled=images.is_cuda):
-            tokens_list, patch_token_start = self.aggregator(images_in, ray_features, patch_rays)
+        pose_enc, depth, depth_conf = run_trunk(self, images_in, ray_features, patch_rays)
 
         out = {}
         with torch.autocast(device_type=images.device.type, enabled=False):
-            pose_enc = self.camera_head(tokens_list, patch_token_start=patch_token_start)
             out["pose_enc"] = pose_enc
             out["camera_poses"] = pose_encoding_to_c2w(pose_enc, quat_to_mat)
-
-            depth, depth_conf = self.dense_head(tokens_list, images=images_in, patch_token_start=patch_token_start,
-                                                frames_chunk_size=self.frames_chunk_size)
             if depth.shape[2:4] != (H, W):
                 d = F.interpolate(depth[..., 0].flatten(0, 1).unsqueeze(1), size=(H, W), mode="bilinear",
                                   align_corners=False)

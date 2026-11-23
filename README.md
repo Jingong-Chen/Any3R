@@ -18,6 +18,7 @@
 
 ## News
 
+- **2026-11-20** · The paper is updated on [arXiv](https://arxiv.org/abs/2610.36150) (v2).
 - **2026-10-31** · Inference code, model weights, interactive demo and evaluation code are released.
 
 ## Contents
@@ -124,11 +125,11 @@ Any3R is fine-tuned from VGGT-Omega for 40 epochs on Matterport3D, Stanford2D3DS
 
 All numbers are from the paper. The benchmark images every scene of three datasets through the same views with each camera model, and every method fuses its points with **its own predicted camera poses**. Acc (m, lower is better) is the mean distance from a reconstructed point to the ground truth; AUC@15° / AUC@30° (%, higher is better) is the area under the pairwise pose-error curve. In each table, the best value of a column is in **bold** and the second best <ins>underlined</ins>. The five held-out camera models are in the paper's appendix and in [eval/README.md](eval/README.md).
 
-### Eight camera models, seven methods
+### Eight camera models, six methods
 
-<p align="center"><img src="assets/compare_cameras.jpg" width="100%" alt="Eight central camera models, seven methods, one scene per row"></p>
+<p align="center"><img src="assets/compare_cameras.jpg" width="100%" alt="Eight central camera models, six methods, one scene per row"></p>
 
-One scene per row, each imaged by three views through one camera model. Every method fuses the same three views with its own predicted poses and is placed in the ground-truth frame by one similarity transform; the highest 30% of each indoor cloud is removed so the room can be seen from above. MapAny. is MapAnything and Any3R\* is Any3R without its ray map. The same data can be explored in 3D on the [project page](https://jingong-chen.github.io/Any3R/#compare).
+One scene per row, each imaged by three views through one camera model. Every method fuses the same three views with its own predicted poses and is placed in the ground-truth frame by one similarity transform; the highest 30% of each indoor cloud is removed so the room can be seen from above. MapAny. is MapAnything. The same data can be explored in 3D on the [project page](https://jingong-chen.github.io/Any3R/#compare).
 
 ### Methods built for other cameras
 
@@ -198,7 +199,7 @@ ScanNet++ (DSLR fisheye) and FIORD (200° lens), neither in Any3R's training dat
 | MapA-ray | <ins>74.7</ins> | <ins>61.6</ins> | 33.3 | 23.1 | 49.4 | 31.9 | 39.4 | 6.3 |
 | **Any3R** | **80.7** | **74.2** | **92.5** | **93.7** | **92.6** | **89.4** | **90.5** | **98.6** |
 
-**Comparison with geometry foundation models.** Any3R\* is Any3R without its ray map (it then assumes an equirectangular grid) and is not ranked.
+**Comparison with geometry foundation models.**
 
 <b>Indoor (Matterport3D + Stanford2D3DS)</b>
 
@@ -210,7 +211,6 @@ ScanNet++ (DSLR fisheye) and FIORD (200° lens), neither in Any3R's training dat
 | DA3 | 0.313 | 0.294 | 0.361 | 0.288 | 0.363 | 0.396 | 0.379 | 0.402 |
 | VGGT | 0.270 | 0.282 | 0.361 | 0.274 | 0.379 | 0.356 | 0.374 | 0.398 |
 | VGGT-Ω | 0.149 | 0.161 | 0.252 | <ins>0.265</ins> | 0.250 | 0.281 | 0.302 | 0.403 |
-| Any3R\* | 0.282 | 0.283 | 0.274 | 0.278 | 0.278 | 0.279 | 0.298 | 0.054 |
 | **Any3R** | **0.076** | **0.091** | **0.058** | **0.052** | **0.059** | **0.056** | **0.060** | **0.054** |
 | *AUC@15° ↑ (%)* | | | | | | | | |
 | π³ | **76.9** | <ins>53.5</ins> | <ins>42.1</ins> | 18.0 | <ins>43.1</ins> | <ins>35.2</ins> | <ins>34.6</ins> | 3.5 |
@@ -218,7 +218,6 @@ ScanNet++ (DSLR fisheye) and FIORD (200° lens), neither in Any3R's training dat
 | DA3 | 7.8 | 2.7 | 0.9 | <ins>22.1</ins> | 1.2 | 0.4 | 0.7 | <ins>7.0</ins> |
 | VGGT | 23.3 | 9.9 | 5.2 | 14.2 | 5.3 | 5.0 | 2.9 | 3.3 |
 | VGGT-Ω | 63.5 | 50.4 | 31.3 | 15.0 | 29.6 | 24.0 | 19.5 | 6.9 |
-| Any3R\* | 24.0 | 43.8 | 48.3 | 41.7 | 48.2 | 55.0 | 58.5 | 94.5 |
 | **Any3R** | <ins>74.8</ins> | **64.8** | **90.6** | **86.0** | **90.5** | **81.2** | **80.5** | **94.5** |
 | *AUC@30° ↑ (%)* | | | | | | | | |
 | π³ | <ins>82.7</ins> | 66.0 | <ins>61.9</ins> | 37.1 | <ins>62.7</ins> | <ins>56.4</ins> | <ins>58.9</ins> | 14.1 |
@@ -226,7 +225,6 @@ ScanNet++ (DSLR fisheye) and FIORD (200° lens), neither in Any3R's training dat
 | DA3 | 17.8 | 10.3 | 5.7 | <ins>46.2</ins> | 7.2 | 5.5 | 5.1 | 16.8 |
 | VGGT | 50.0 | 25.6 | 18.8 | 32.2 | 16.6 | 16.4 | 13.9 | 10.6 |
 | VGGT-Ω | 76.9 | <ins>69.7</ins> | 53.8 | 34.6 | 52.3 | 47.1 | 42.0 | <ins>17.8</ins> |
-| Any3R\* | 47.5 | 66.2 | 71.3 | 65.8 | 72.0 | 75.9 | 77.5 | 96.6 |
 | **Any3R** | **85.0** | **78.3** | **93.9** | **91.6** | **94.6** | **89.6** | **88.5** | **96.6** |
 
 <b>Outdoor (PanoCity)</b>
@@ -239,7 +237,6 @@ ScanNet++ (DSLR fisheye) and FIORD (200° lens), neither in Any3R's training dat
 | DA3 | 4.360 | 5.689 | 6.656 | 2.717 | 6.844 | 6.463 | 6.477 | 3.149 |
 | VGGT | 4.153 | 3.940 | 6.296 | 3.078 | 6.886 | 6.623 | 6.430 | 1.902 |
 | VGGT-Ω | 1.711 | <ins>1.572</ins> | 2.162 | 2.455 | 2.490 | 2.680 | 2.544 | 1.876 |
-| Any3R\* | 2.079 | 2.525 | 2.370 | 3.324 | 2.463 | 2.420 | 2.552 | 0.663 |
 | **Any3R** | **1.160** | **1.243** | **0.866** | **0.811** | **0.854** | **0.863** | **0.901** | **0.663** |
 | *AUC@15° ↑ (%)* | | | | | | | | |
 | π³ | 44.6 | 34.0 | 18.8 | <ins>15.9</ins> | <ins>20.0</ins> | 14.4 | <ins>16.0</ins> | 2.3 |
@@ -247,7 +244,6 @@ ScanNet++ (DSLR fisheye) and FIORD (200° lens), neither in Any3R's training dat
 | DA3 | 4.8 | 3.0 | 6.4 | 7.7 | 4.9 | 3.4 | 4.6 | <ins>5.5</ins> |
 | VGGT | 15.1 | 2.6 | 3.7 | 9.5 | 6.5 | 5.5 | 7.3 | 0.9 |
 | VGGT-Ω | 45.5 | <ins>44.4</ins> | 15.8 | 8.1 | 15.6 | 13.8 | 8.8 | 3.9 |
-| Any3R\* | 20.1 | 36.0 | 45.0 | 29.9 | 47.3 | 48.8 | 50.1 | 97.2 |
 | **Any3R** | **61.5** | **51.0** | **85.0** | **87.4** | **85.2** | **79.5** | **81.0** | **97.2** |
 | *AUC@30° ↑ (%)* | | | | | | | | |
 | π³ | 61.7 | 47.1 | 36.1 | <ins>28.3</ins> | 37.3 | 30.0 | <ins>35.0</ins> | 4.8 |
@@ -255,10 +251,9 @@ ScanNet++ (DSLR fisheye) and FIORD (200° lens), neither in Any3R's training dat
 | DA3 | 13.6 | 11.5 | 14.8 | 22.1 | 10.2 | 9.8 | 10.6 | <ins>11.3</ins> |
 | VGGT | 32.8 | 11.0 | 8.8 | 24.3 | 13.9 | 13.2 | 17.3 | 3.5 |
 | VGGT-Ω | 55.3 | <ins>54.7</ins> | 33.8 | 23.6 | 34.8 | 31.4 | 24.4 | 8.5 |
-| Any3R\* | 38.9 | 58.3 | 67.7 | 53.7 | 69.6 | 72.3 | 72.2 | 98.6 |
 | **Any3R** | **80.7** | **74.2** | **92.5** | **93.7** | **92.6** | **89.4** | **90.5** | **98.6** |
 
-**Zero-shot on real fisheye lenses:** the ScanNet++ DSLR fisheye (validation split) and the 200° lens of the FIORD rig, neither in Any3R's training data. † Wid3R is trained on ScanNet++. Any3R\* is not ranked.
+**Zero-shot on real fisheye lenses:** the ScanNet++ DSLR fisheye (validation split) and the 200° lens of the FIORD rig, neither in Any3R's training data. † Wid3R is trained on ScanNet++.
 
 | Method | ScanNet++ Acc ↓ | AUC@15° ↑ | AUC@30° ↑ | FIORD Acc ↓ | AUC@15° ↑ | AUC@30° ↑ |
 |:---|:---:|:---:|:---:|:---:|:---:|:---:|
@@ -271,7 +266,6 @@ ScanNet++ (DSLR fisheye) and FIORD (200° lens), neither in Any3R's training dat
 | DA3 | 0.118 | 17.2 | 41.5 | 0.380 | 9.1 | 25.8 |
 | VGGT | 0.118 | 18.0 | 41.7 | 0.442 | 15.6 | 35.3 |
 | VGGT-Ω | 0.112 | 16.7 | 42.9 | 0.451 | 19.9 | 38.9 |
-| Any3R\* | 0.273 | 7.5 | 22.9 | 0.480 | 28.3 | 47.5 |
 | **Any3R** | <ins>0.055</ins> | <ins>62.7</ins> | <ins>79.7</ins> | **0.274** | **63.8** | **78.4** |
 
 ## Evaluation

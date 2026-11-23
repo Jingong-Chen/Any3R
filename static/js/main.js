@@ -266,9 +266,9 @@ async function initTables() {
   const box = $(".table-box", root), note = $(".table-note", root);
   let tab = "gfm", measure = 0;
   const NOTES = {
-    gfm: "Geometry foundation models. Any3R* is Any3R without its ray map (it then assumes an equirectangular grid) and is not ranked.",
+    gfm: "Geometry foundation models.",
     camaware: "Methods built for other cameras. Wid3R receives the true ray field; MapA-ray is MapAnything with the true ray field fed to its ray encoder; – marks cameras a method cannot take.",
-    zeroshot: "Real fisheye lenses, not in Any3R's training data: the ScanNet++ DSLR fisheye (validation split) and the 200° lens of the FIORD rig. † Wid3R is trained on ScanNet++. Any3R* is not ranked.",
+    zeroshot: "Real fisheye lenses, not in Any3R's training data: the ScanNet++ DSLR fisheye (validation split) and the 200° lens of the FIORD rig. † Wid3R is trained on ScanNet++.",
   };
   function render() {
     root.querySelectorAll(".tab").forEach((t) => t.classList.toggle("active", t.dataset.t === tab));

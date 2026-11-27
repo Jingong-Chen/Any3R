@@ -27,14 +27,14 @@
 
 ## Highlights
 
-- **One model for every central camera.** Thirteen camera models are built in (pinhole, Brown–Conrady, Kannala–Brandt, equidistant, equisolid, stereographic, FOV, MEI, double sphere, EUCM, cylindrical, equirectangular and equirectangular windows), and any other central camera works through its ray field.
+- **One model for every central camera.** Thirteen camera models are built in (pinhole, Brown–Conrady, Kannala–Brandt, equidistant, equisolid, stereographic, FOV, MEI, double sphere, EUCM, cylindrical, equirectangular and cropped equirectangular), and any other central camera works through its ray field.
 - **Mixed cameras in one scene.** Views from different cameras, with different sizes and fields of view, are reconstructed together into one consistent point cloud.
 - **Calibrations as you have them.** COLMAP models, OpenCV calibrations, a JSON file, or just "a 190° fisheye".
 - **Fast.** 32 views at 512 × 512 in 1.1 s and 128 views in 9 s (17.7 GB) on one RTX 5090.
 
 <p align="center"><img src="assets/method.png" width="96%" alt="Any3R architecture"></p>
 
-The ray field enters the network in two places. *Angular coordinates* give the rotary position embedding the measured elevation and azimuth of every patch, per view, in place of its row and column; *solid-angle weighting* scales the training loss by the area each pixel covers on the sphere. Neither depends on the lens.
+The ray field enters the network in the two places that rely on the pixel grid. *Angular coordinates* give both positional encodings, rotary and absolute, the elevation and azimuth of every patch's mean ray, per view, in place of its row and column; *solid-angle weighting* scales the point loss by the area each pixel covers on the unit sphere. Neither depends on the lens.
 
 ## Installation
 
@@ -98,7 +98,7 @@ Conventions, the JSON format used by the demos and the parameters of every model
 # 20 views of a street through 8 different camera models (pinhole to 360°)
 python demo.py --images examples/street_mixed/images --cameras examples/street_mixed/cameras.json --out outputs/street
 
-# a real 214° fisheye with its COLMAP calibration (FIORD)
+# a real 200° fisheye (FIORD) with its COLMAP calibration
 python demo.py --images examples/fiord_meetingroom/images --cameras examples/fiord_meetingroom/cameras.json --out outputs/fiord
 
 # eight equirectangular panoramas
@@ -123,7 +123,7 @@ Any3R is fine-tuned from VGGT-Omega for 40 epochs on Matterport3D, Stanford2D3DS
 
 ## Results
 
-All numbers are from the paper. The benchmark images every scene of three datasets through the same views with each camera model, and every method fuses its points with **its own predicted camera poses**. Acc (m, lower is better) is the mean distance from a reconstructed point to the ground truth; AUC@15° / AUC@30° (%, higher is better) is the area under the pairwise pose-error curve. In each table, the best value of a column is in **bold** and the second best <ins>underlined</ins>. The five held-out camera models are in the paper's appendix and in [eval/README.md](eval/README.md).
+All numbers are from the paper. The benchmark images every scene of three datasets through the same views with each camera model, and every method fuses its points with **its own predicted camera poses**. Acc (m, lower is better) is the mean distance from each reconstructed point to its nearest ground-truth point after similarity alignment and ICP refinement; AUC@15° / AUC@30° (%, higher is better) is the area under the curve of the pairwise pose error, the larger of the relative rotation and translation-direction errors. In each table, the best value of a column is in **bold** and the second best <ins>underlined</ins>. The five held-out camera models are in the paper's appendix and in [eval/README.md](eval/README.md).
 
 ### Eight camera models, six methods
 
@@ -131,7 +131,7 @@ All numbers are from the paper. The benchmark images every scene of three datase
 
 One scene per row, each imaged by three views through one camera model. Every method fuses the same three views with its own predicted poses and is placed in the ground-truth frame by one similarity transform; the highest 30% of each indoor cloud is removed so the room can be seen from above. MapAny. is MapAnything. The same data can be explored in 3D on the [project page](https://jingong-chen.github.io/Any3R/#compare).
 
-### Methods built for other cameras
+### Camera-aware methods
 
 <p align="center"><img src="assets/compare_camera_aware.jpg" width="100%" alt="Comparison with camera-aware methods"></p>
 
@@ -145,7 +145,7 @@ ScanNet++ (DSLR fisheye) and FIORD (200° lens), neither in Any3R's training dat
 
 ### Benchmark tables
 
-**Comparison with methods built for other cameras.** Wid3R receives the true ray field; MapA-ray is MapAnything with the true ray field fed to its ray encoder; – marks cameras a method cannot take.
+**Comparison with camera-aware methods.** Wid3R receives the true ray field; MapA-ray is MapAnything with the true ray field fed to its ray encoder; – marks cameras a method cannot take.
 
 <b>Indoor (Matterport3D + Stanford2D3DS)</b>
 
@@ -283,7 +283,7 @@ On the paper's configuration (A100, PyTorch 2.5.1) the released code and weights
 
 ## Limitations
 
-- **Central cameras.** Every pixel's ray must pass through one centre. Non-central optics (rolling-shutter motion, push-broom sensors, strongly non-central catadioptric systems) are outside the model.
+- **Central cameras.** Every pixel's ray must pass through one center. Non-central optics (rolling-shutter motion, push-broom sensors, strongly non-central catadioptric systems) are outside the model.
 - **A calibration is needed.** Any3R uses the ray field it is given and does not estimate intrinsics. Without a calibration, `from_fov` with the nominal lens type and field of view is a reasonable start.
 - **Scale and dynamics.** Reconstructions have an arbitrary scale, and the scene is assumed static.
 

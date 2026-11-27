@@ -3,7 +3,7 @@ import { PointViewer, loadPoints } from "./viewer.js";
 const KIND = {
   pinhole: "Pinhole", brown_conrady: "Brown–Conrady", equidistant: "Equidistant", kb4: "Kannala–Brandt",
   mei: "MEI", double_sphere: "Double sphere", eucm: "EUCM", equisolid: "Equisolid", stereographic: "Stereographic",
-  fov: "FOV", cylindrical: "Cylindrical", erp: "Equirectangular", erp_crop: "ERP window",
+  fov: "FOV", cylindrical: "Cylindrical", erp: "Equirectangular", erp_crop: "Cropped equirectangular",
 };
 const $ = (s, el = document) => el.querySelector(s);
 const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; };
@@ -114,7 +114,7 @@ const FAMILIES = {
   gfm: { file: "cmp.json", prefix: "cmp", right: ["pi3", "mapa", "vggtomega"],
          note: "Geometry foundation models: data of the paper's eight-camera comparison figure (120k points per cloud)." },
   aware: { file: "cmpa.json", prefix: "cmpa", right: ["wid3r", "maparay", "panovggt", "omnivggt"],
-           note: "Methods built for other cameras: data of the paper's camera-aware comparison figure. Wid3R receives the true ray field; MapA-ray is MapAnything with the true ray field fed to its ray encoder; greyed-out buttons mark cameras a method cannot take." },
+           note: "Camera-aware methods: data of the paper's camera-aware comparison figure. Wid3R receives the true ray field; MapA-ray is MapAnything with the true ray field fed to its ray encoder; grayed-out buttons mark cameras a method cannot take." },
 };
 
 async function initCompare() {
@@ -267,7 +267,7 @@ async function initTables() {
   let tab = "gfm", measure = 0;
   const NOTES = {
     gfm: "Geometry foundation models.",
-    camaware: "Methods built for other cameras. Wid3R receives the true ray field; MapA-ray is MapAnything with the true ray field fed to its ray encoder; – marks cameras a method cannot take.",
+    camaware: "Camera-aware methods. Wid3R receives the true ray field; MapA-ray is MapAnything with the true ray field fed to its ray encoder; – marks cameras a method cannot take.",
     zeroshot: "Real fisheye lenses, not in Any3R's training data: the ScanNet++ DSLR fisheye (validation split) and the 200° lens of the FIORD rig. † Wid3R is trained on ScanNet++.",
   };
   function render() {

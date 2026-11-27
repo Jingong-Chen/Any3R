@@ -792,7 +792,7 @@
    "ds": "PanoCity",
    "indoor": false,
    "kind": "erp_crop",
-   "label": "ERP window",
+   "label": "Cropped equirectangular",
    "fov": 180,
    "scene": "scene_000.npz",
    "methods": [

@@ -65,15 +65,15 @@
 </section>
 
 <section class="narrow">
-  <div class="tldr"><b>TL;DR</b> &nbsp;Any3R is a feed-forward 3D reconstruction model that works with <em>any</em> central camera, including fisheyes beyond 180°, 360° panoramas and any mix of lenses in one scene, because it reads each view's <b>ray field</b> instead of assuming a pinhole.</div>
+  <div class="tldr"><b>TL;DR</b> &nbsp;Any3R is a feed-forward 3D reconstruction model for <em>any</em> mix of central cameras, from pinholes to fisheyes beyond 180° and 360° panoramas, without lens-specific retraining: it conditions both its positional encoding and its training loss on each view's <b>ray field</b> instead of the pixel grid.</div>
 
   <h2>Abstract</h2>
-  <p class="justify">Geometry foundation models recover camera poses and dense geometry from a set of images with a feed-forward network, but they expect pinhole images. That assumption is inside the backbone too: the positional encoding and the training loss both bind an image position to a direction in space, and both depend on the lens. We condition both on the dense ray field, the unit direction through every pixel, which describes any central camera without a lens type, distortion coefficients or a bound on field of view. <em>Angular coordinates</em> give the rotary encoding the measured ray angle of each patch, evaluated per view, and <em>solid-angle weighting</em> scales the point loss by the area each pixel covers on the sphere, so neither the encoding nor the supervision depends on the lens. <b>Any3R</b> is therefore a feed-forward model that takes any central camera, and is robust to mixing many camera types per scene, with no retraining per lens. On a benchmark of thirteen central cameras across three datasets, where every method reconstructs with its own predicted camera poses, it is the most consistently accurate method. <b>Any3R</b> enables scalable 3D reconstruction from heterogeneous crowdsourced and archival imagery collections sourced across diverse camera types.</p>
+  <p class="justify">Geometry foundation models recover camera poses and dense scene geometry from multiple images using feed-forward networks, but are typically designed for pinhole cameras. This assumption is embedded in the backbone itself: positional encoding locates each patch by its pixel index and the training loss weights every pixel equally, so both treat image coordinates as if they fixed the viewing direction in 3D space, which holds only for pinhole cameras. We condition both on the dense ray field, which maps each pixel to its 3D viewing direction and represents any central camera regardless of its projection model. <em>Angular coordinates</em> use the viewing direction of each patch for positional encoding, and <em>solid-angle weighting</em> scales the point loss by the angular area covered by each pixel. Together, they allow the same encoding and supervision to be used across different camera models. <b>Any3R</b> is therefore a feed-forward model that reconstructs from any mix of central cameras without lens-specific retraining. On a benchmark of eight central cameras across three datasets, where every method reconstructs with its own predicted camera poses, it is the most consistently accurate method. <b>Any3R</b> enables 3D reconstruction from crowdsourced and archival image collections containing diverse camera types.</p>
 </section>
 
 <section id="gallery" class="wide">
   <h2>Interactive results</h2>
-  <p class="lead">Point clouds and cameras predicted by the released model in one forward pass, with its own camera poses, for real fisheyes, rendered lenses and panoramas. The views join one by one when a scene opens (press ▶ to replay). For the web, low-confidence points and points no other view confirms are dropped. Drag to orbit, right-drag to pan, scroll to zoom; camera markers are coloured by field of view.</p>
+  <p class="lead">Point clouds and cameras predicted by the released model in one forward pass, with its own camera poses, for real fisheyes, rendered lenses and panoramas. The views join one by one when a scene opens (press ▶ to replay). For the web, low-confidence points and points no other view confirms are dropped. Drag to orbit, right-drag to pan, scroll to zoom; camera markers are colored by field of view.</p>
   <div class="viewer-box">
     <div class="viewer-canvas"></div>
     <div class="viewer-info"></div>
@@ -131,13 +131,13 @@
 
 <section class="narrow">
   <h2>How it works</h2>
-  <p class="justify">A central camera is fully described by the direction of the ray through each pixel, whatever the lens. Any3R takes this ray field with every view and uses it in the two places where a pinhole model silently assumes a lens.</p>
+  <p class="justify">A central camera, whose rays all pass through one point, is fully described by the direction of the ray through each pixel, whatever the lens. Any3R takes this ray field with every view and uses it in the two places where the backbone relies on the pixel grid: the positional encoding and the point loss.</p>
 </section>
 <section class="wide">
   <img class="figure" src="static/img/method.png" alt="Any3R architecture">
   <div class="cards">
-    <div class="card"><div class="card-icon"><i class="fas fa-arrows-to-dot"></i></div><h3>Ray field in, any lens</h3><p>Each view comes with the unit ray of every pixel, computed from any calibration: pinhole, distortion polynomials, fisheye models or panoramas. Views with different cameras and sizes share one forward pass.</p></div>
-    <div class="card"><div class="card-icon"><i class="fas fa-compass"></i></div><h3>Angular coordinates</h3><p>The rotary position embedding locates each patch by the measured elevation and azimuth of its rays, per view, instead of its row and column, so attention sees where a patch looks rather than where it sits in the image.</p></div>
+    <div class="card"><div class="card-icon"><i class="fas fa-arrows-to-dot"></i></div><h3>Ray field in, any lens</h3><p>Each view comes with the unit ray of every pixel, computed from any calibration: pinhole, distortion polynomials, fisheye models or panoramas. Views with different cameras and sizes share one forward pass, and each pixel's 3D point is a predicted distance along its ray, which stays valid for rays beyond 90° from the optical axis.</p></div>
+    <div class="card"><div class="card-icon"><i class="fas fa-compass"></i></div><h3>Angular coordinates</h3><p>Both positional encodings of the backbone, rotary and absolute, locate each patch by the elevation and azimuth of its mean ray, per view, instead of its row and column, so one unit of position means the same angle on every camera.</p></div>
     <div class="card"><div class="card-icon"><i class="fas fa-earth-europe"></i></div><h3>Solid-angle weighting</h3><p>The point loss is weighted by the area each pixel covers on the sphere, so every direction counts by how much of the world it covers, not by how many pixels a lens happens to spend on it.</p></div>
   </div>
 </section>
@@ -158,7 +158,7 @@
   <p class="lead">Each scene is imaged by three views through one camera model. Every method fuses its own per-view points with its <b>own predicted poses</b>, and one similarity transform places each cloud in the ground-truth frame. The two viewers share one camera; pick a method above each.</p>
   <div class="fam-tabs tabs">
     <button class="tab fam-tab active" data-f="gfm">Geometry foundation models</button>
-    <button class="tab fam-tab" data-f="aware">Methods built for other cameras</button>
+    <button class="tab fam-tab" data-f="aware">Camera-aware methods</button>
   </div>
   <div class="row-chips"></div>
   <div class="cmp-head">
@@ -182,7 +182,7 @@
 
 <section id="results" class="wide">
   <h2>Quantitative results</h2>
-  <p class="lead">Acc is the mean distance from a reconstructed point to the ground truth (metres, lower is better); AUC is the area under the pairwise pose-error curve up to 15° and 30° (higher is better). All methods use their own predicted poses. <span class="best-key">best</span> <span class="second-key">second</span></p>
+  <p class="lead">Acc is the mean distance from each reconstructed point to its nearest ground-truth point after similarity alignment and ICP refinement (meters, lower is better); AUC is the area under the curve of the pairwise pose error, the larger of the relative rotation and translation-direction errors, up to 15° and 30° (higher is better). All methods use their own predicted poses. <span class="best-key">best</span> <span class="second-key">second</span></p>
   <div class="table-controls">
     <div class="tabs">
       <button class="tab" data-t="gfm">Geometry foundation models</button>
